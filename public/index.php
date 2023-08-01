@@ -21,7 +21,7 @@ $app->add(MethodOverrideMiddleware::class);
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/', function ($request, $response) {
-    return $response->write('Welcome to Slim!!');
-});
+    return $this->get('view')->render($response, 'index.twig');
+})->setName('home');
 
 $app->run();
