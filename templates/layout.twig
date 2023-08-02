@@ -10,7 +10,7 @@
 <body class="min-vh-100 d-flex flex-column">
     <header class="flex-shrink-0">
         {% block header %}
-            {% include 'header.html' %}
+            {% include 'header.html' with headerParams %}
         {% endblock %}
     </header>
     <main class="flex-grow-1">
