@@ -24,4 +24,8 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
+$app->get('/urls', function ($request, $response) {
+    return $this->get('view')->render($response, 'urls/index.twig');
+})->setName('urls.index');
+
 $app->run();
