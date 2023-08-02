@@ -8,7 +8,11 @@
     <title>Анализатор страниц</title>
 </head>
 <body>
-    <header>{% block header %}{% endblock %}</header>
+    <header>
+        {% block header %}
+            {% include 'header.html' %}
+        {% endblock %}
+    </header>
     <main>{% block content %}{% endblock %}</main>
     <footer>{% block footer %}{% endblock %}</footer>
 </body>
