@@ -1,0 +1,45 @@
+{% extends "layout.twig" %}
+
+{% set headerParams = {'active': 'urls'} %}
+
+{% block content %}
+<div class="container-lg mt-3">
+    <div class="row">
+        <h1>Сайты</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <a href="/urls/2">
+                                https://hexlet.io
+                            </a>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <a href="/urls/1">
+                                https://google.com
+                            </a>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
