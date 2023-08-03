@@ -23,8 +23,12 @@ class CookieRepository implements Repository
         $this->itemName = $itemName;
     }
 
-    public function save(array $item, string $created_at = null, ServerRequestInterface $request = null, ResponseInterface &$response = null): void
-    {
+    public function save(
+        array $item,
+        string $created_at = null,
+        ServerRequestInterface $request = null,
+        ResponseInterface &$response = null
+    ): void {
         if (!isset($item['id'])) {
             $item['id'] = $this->getNextId($request);
         } else {
