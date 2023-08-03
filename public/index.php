@@ -57,9 +57,16 @@ $app->post('/urls', function ($request, $response) use ($repo) {
     ]);
 })->setName('urls.store');
 
-$app->get('/urls/{id}', function ($request, $response, $args) {
+$app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
+    $url = $repo->find($args['id'], $request);
+
+    if (empty($url)) {
+        return $response->write('Page not found')
+            ->withStatus(404);
+    }
+
     return $this->get('view')->render($response, 'urls/show.twig', [
-        'id' => $args['id']
+        'url' => $url
     ]);
 })->setName('urls.show');
 
