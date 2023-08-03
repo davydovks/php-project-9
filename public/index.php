@@ -74,7 +74,7 @@ $app->get('/assets/{filename}', function($request, $response, $args) {
     $data = $args['filename'];
     $path = __DIR__ . "/../assets/{$data}";
     $image = file_get_contents($path);
-    if($image === FALSE) {
+    if($image === false) {
         $handler = $this->notFoundHandler;
         return $handler($request, $response);    
     }
