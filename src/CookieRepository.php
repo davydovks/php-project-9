@@ -30,7 +30,7 @@ class CookieRepository implements Repository
         } else {
             $this->destroy($item['id'], $request, $response);
         }
-        
+
         $cookie = $this->all($request);
         $cookie[] = $item;
         $encodedCookie = json_encode($cookie);
