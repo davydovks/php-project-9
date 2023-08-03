@@ -45,11 +45,16 @@ $app->get('/urls', function ($request, $response) use ($repo) {
 $app->post('/urls', function ($request, $response) use ($repo, $router) {
     $url = $request->getParsedBodyParam('url');
 
+    $parsedUrl = parse_url($url['name']);
+    $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+    $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+    $url['name'] = "{$scheme}{$host}";
+
     $validator = new Validator($url);
     $validator->rule('required', 'name');
     $validator->rule('url', 'name');
     $validator->rule('lengthMax', 'name', 255);
-    
+
     if ($validator->validate()) {
         $createdAt = Carbon::now()->toDateTimeString();
 
