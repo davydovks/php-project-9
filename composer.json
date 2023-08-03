@@ -29,6 +29,7 @@
         "php-di/php-di": "^7.0",
         "slim/twig-view": "^3.3",
         "vlucas/valitron": "^1.4",
-        "nesbot/carbon": "^2.68"
+        "nesbot/carbon": "^2.68",
+        "laracasts/flash": "^3.2"
     }
 }
