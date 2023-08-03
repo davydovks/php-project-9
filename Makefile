@@ -5,7 +5,7 @@ dump:
 	composer dump-autoload
 
 lint:
-	composer exec --verbose phpcs -- --standard=PSR12 src tests
+	composer exec --verbose phpcs -- --standard=PSR12 src public
 
 test:
 	composer exec --verbose phpunit tests
