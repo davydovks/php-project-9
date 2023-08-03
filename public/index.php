@@ -8,6 +8,7 @@ use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
+use Valitron\Validator;
 
 session_start();
 
@@ -43,11 +44,12 @@ $app->get('/urls', function ($request, $response) use ($repo) {
 $app->post('/urls', function ($request, $response) use ($repo, $router) {
     $url = $request->getParsedBodyParam('url');
 
-    // Need to add validator from Valitron
-    //$validator = new Validators\UserValidator();
-    $errors = []; //$validator->validate($user);
-
-    if (count($errors) === 0) {
+    $validator = new Validator($url);
+    $validator->rule('required', 'name');
+    $validator->rule('url', 'name');
+    $validator->rule('lengthMax', 'name', 255);
+    
+    if ($validator->validate()) {
         $repo->save($url, $request, $response);
         // Uncomment after flash is installed and used
         //$this->get('flash')->addMessage('success', 'User added successfully!');
@@ -57,7 +59,7 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
 
     return $this->get('view')->render($response, 'index.twig', [
         'url' => $url,
-        'errors' => $errors
+        'errors' => $validator->errors()
     ]);
 })->setName('urls.store');
 
