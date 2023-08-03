@@ -9,6 +9,7 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
 use Valitron\Validator;
+use Carbon\Carbon;
 
 session_start();
 
@@ -50,7 +51,9 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
     $validator->rule('lengthMax', 'name', 255);
     
     if ($validator->validate()) {
-        $repo->save($url, $request, $response);
+        $createdAt = Carbon::now()->toDateTimeString();
+
+        $repo->save($url, $createdAt, $request, $response);
         // Uncomment after flash is installed and used
         //$this->get('flash')->addMessage('success', 'User added successfully!');
 
