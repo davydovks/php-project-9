@@ -17,26 +17,18 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for url in urls %}
                     <tr>
-                        <td>2</td>
+                        <td>{{ url.id }}</td>
                         <td>
-                            <a href="/urls/2">
-                                https://hexlet.io
+                            <a href="/urls/{{ url.id }}">
+                                {{ url.name }}
                             </a>
                         </td>
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>
-                            <a href="/urls/1">
-                                https://google.com
-                            </a>
-                        </td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
