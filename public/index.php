@@ -26,6 +26,8 @@ $app->add(TwigMiddleware::createFromContainer($app));
 $app->add(MethodOverrideMiddleware::class);
 $app->addErrorMiddleware(true, true, true);
 
+$router = $app->getRouteCollector()->getRouteParser();
+
 $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
@@ -38,7 +40,7 @@ $app->get('/urls', function ($request, $response) use ($repo) {
     ]);
 })->setName('urls.index');
 
-$app->post('/urls', function ($request, $response) use ($repo) {
+$app->post('/urls', function ($request, $response) use ($repo, $router) {
     $url = $request->getParsedBodyParam('url');
 
     // Need to add validator from Valitron
@@ -50,9 +52,9 @@ $app->post('/urls', function ($request, $response) use ($repo) {
         // Uncomment after flash is installed and used
         //$this->get('flash')->addMessage('success', 'User added successfully!');
 
-        return $response->withRedirect('/urls', 302);
+        //return $response->withRedirect('/urls', 302);
         // Replace the line above after router is added
-        //return $response->withRedirect($router->urlFor('users.index'), 302);
+        return $response->withRedirect($router->urlFor('urls.index'), 302);
     }
 
     return $this->get('view')->render($response, 'index.twig', [
