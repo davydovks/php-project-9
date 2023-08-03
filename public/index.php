@@ -61,7 +61,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
     $url = $repo->find($args['id'], $request);
 
     if (empty($url)) {
-        return $response->write('Page not found')
+        return $this->get('view')->render($response, '404.twig')
             ->withStatus(404);
     }
 
