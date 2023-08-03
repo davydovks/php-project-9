@@ -11,6 +11,7 @@ use Slim\Middleware\MethodOverrideMiddleware;
 
 session_start();
 
+// Need to replace with DBRepo
 $repo = new CookieRepository('urls');
 
 $container = new Container();
@@ -40,14 +41,17 @@ $app->get('/urls', function ($request, $response) use ($repo) {
 $app->post('/urls', function ($request, $response) use ($repo) {
     $url = $request->getParsedBodyParam('url');
 
+    // Need to add validator from Valitron
     //$validator = new Validators\UserValidator();
     $errors = []; //$validator->validate($user);
 
     if (count($errors) === 0) {
         $repo->save($url, $request, $response);
+        // Uncomment after flash is installed and used
         //$this->get('flash')->addMessage('success', 'User added successfully!');
 
         return $response->withRedirect('/urls', 302);
+        // Replace the line above after router is added
         //return $response->withRedirect($router->urlFor('users.index'), 302);
     }
 
