@@ -52,8 +52,6 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
         // Uncomment after flash is installed and used
         //$this->get('flash')->addMessage('success', 'User added successfully!');
 
-        //return $response->withRedirect('/urls', 302);
-        // Replace the line above after router is added
         return $response->withRedirect($router->urlFor('urls.index'), 302);
     }
 
