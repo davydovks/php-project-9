@@ -70,5 +70,17 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
     ]);
 })->setName('urls.show');
 
+$app->get('/assets/{filename}', function($request, $response, $args) {
+    $data = $args['filename'];
+    $path = __DIR__ . "/../assets/{$data}";
+    $image = @file_get_contents($path);
+    if($image === FALSE) {
+        $handler = $this->notFoundHandler;
+        return $handler($request, $response);    
+    }
+    
+    $response->write($image);
+    return $response->withHeader('Content-Type', 'image/svg+xml');
+});
 
 $app->run();
