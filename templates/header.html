@@ -6,14 +6,14 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                {% if active == 'home' %}
+                {% if activePage == 'home' %}
                     <a class="nav-link active" aria-current="page" href="/">Главная</a>
                 {% else %}
                     <a class="nav-link" href="/">Главная</a>
                 {% endif %}
             </li>
             <li class="nav-item">
-                {% if active == 'urls' %}
+                {% if activePage == 'urls' %}
                     <a class="nav-link active" aria-current="page" href="#">Сайты</a>
                 {% else %}
                     <a class="nav-link" href="/urls">Сайты</a>
