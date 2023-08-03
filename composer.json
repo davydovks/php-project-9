@@ -28,6 +28,7 @@
         "slim/php-view": "^3.2",
         "php-di/php-di": "^7.0",
         "slim/twig-view": "^3.3",
-        "vlucas/valitron": "^1.4"
+        "vlucas/valitron": "^1.4",
+        "nesbot/carbon": "^2.68"
     }
 }
