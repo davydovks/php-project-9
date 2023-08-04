@@ -51,13 +51,14 @@ class CookieRepository implements Repository
         return json_decode($request->getCookieParam($this->itemName, json_encode([])), true) ?? [];
     }
 
-    public function find(int $id, ServerRequestInterface $request = null): array
+    public function find(string $field, mixed $value, ServerRequestInterface $request = null): array
     {
         $cookie = $this->all($request);
-        //return array_filter($cookie, fn($item) => $item['id'] == $id);
-        return array_reduce($cookie, function ($carry, $item) use ($id) {
-            return $item['id'] == $id ? $item : $carry;
-        }, []);
+        return array_reduce(
+            $cookie,
+            fn($carry, $item) => $item[$field] == $value ? $item : $carry,
+            []
+        );
     }
 
     public function destroy(int $id, ServerRequestInterface $request = null, ResponseInterface &$response = null): void
