@@ -3,18 +3,17 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use DI\Container;
-use Repository\CookieRepository;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
 use Valitron\Validator;
 use Carbon\Carbon;
+use Repository\DBRepository;
 
 session_start();
 
-// Need to replace with DBRepo
-$repo = new CookieRepository('urls');
+$repo = new DBRepository('urls');
 
 $container = new Container();
 
