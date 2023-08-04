@@ -54,7 +54,7 @@ class DBRepository implements Repository
 
     public function all(): array
     {
-        $sql = "SELECT * FROM {$this->itemName}";
+        $sql = "SELECT * FROM {$this->itemName} ORDER BY id DESC";
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
