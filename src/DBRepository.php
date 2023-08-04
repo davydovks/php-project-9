@@ -23,13 +23,22 @@ class DBRepository implements Repository
         }
     }
 
-    public function save(array $item, string $created_at = null): void
+    public function save(array $item): void
     {
-        $sql = "INSERT INTO {$this->itemName} (name, created_at) VALUES (:name, :created_at)";
+        $columns = [];
+        $values = [];
+        foreach ($item as $key => $value) {
+            $columns[] = $key;
+            $values[] = ':' . $key;
+        }
+        $colStr = implode(', ', $columns);
+        $valStr = implode(', ', $values);
+        $sql = "INSERT INTO {$this->itemName} ($colStr) VALUES ($valStr)";
         try {
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':name', $item['name']);
-            $stmt->bindParam(':created_at', $created_at);
+            foreach (array_keys($item) as $key) {
+                $stmt->bindParam(':' . $key, $item[$key]);
+            }
             $stmt->execute();
         } catch (\PDOException $e) {
             echo $e->getMessage();
@@ -42,11 +51,8 @@ class DBRepository implements Repository
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
-            $result = [];
-            foreach ($stmt as $row) {
-                $result[] = $row;
-            }
-            return $result[0] ?? [];
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return is_array($row) ? $row : [];
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
@@ -58,11 +64,7 @@ class DBRepository implements Repository
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
-            $result = [];
-            foreach ($stmt as $row) {
-                $result[] = $row;
-            }
-            return $result;
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
