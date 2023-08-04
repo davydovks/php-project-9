@@ -71,9 +71,8 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
 
-    $createdAt = Carbon::now()->toDateTimeString();
-
-    $repoUrls->save($url, $createdAt, $request, $response);
+    $url['created_at'] = Carbon::now()->toDateTimeString();
+    $repoUrls->save($url, $request, $response);
     $createdUrl = $repoUrls->find('name', $url['name'], $request);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
