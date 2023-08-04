@@ -55,24 +55,30 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
     $validator->rule('url', 'name');
     $validator->rule('lengthMax', 'name', 255);
 
-    if ($validator->validate()) {
-        $createdAt = Carbon::now()->toDateTimeString();
-
-        $repo->save($url, $createdAt, $request, $response);
-        // Uncomment after flash is installed and used
-        //$this->get('flash')->addMessage('success', 'User added successfully!');
-
-        return $response->withRedirect($router->urlFor('urls.index'), 302);
+    if (!$validator->validate()) {
+        return $this->get('view')->render($response, 'index.twig', [
+            'url' => $url,
+            'errors' => $validator->errors()
+        ]);
     }
 
-    return $this->get('view')->render($response, 'index.twig', [
-        'url' => $url,
-        'errors' => $validator->errors()
-    ]);
+    $existing = $repo->find('name', $url['name'], $request);
+    if ($existing != []) {
+        //$this->get('flash')->addMessage('success', 'Страница уже существует');
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
+    }
+
+    $createdAt = Carbon::now()->toDateTimeString();
+
+    $repo->save($url, $createdAt, $request, $response);
+    // Uncomment after flash is installed and used
+    //$this->get('flash')->addMessage('success', 'Страница успешно добавлена');
+
+    return $response->withRedirect($router->urlFor('urls.index'), 302);
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
-    $url = $repo->find($args['id'], $request);
+    $url = $repo->find('id', $args['id'], $request);
 
     if (empty($url)) {
         return $this->get('view')->render($response, '404.twig')
