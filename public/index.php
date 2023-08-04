@@ -21,6 +21,10 @@ $container->set('view', function () {
     return Twig::create(__DIR__ . '/../templates');
 });
 
+$container->set('flash', function () {
+    return new \Slim\Flash\Messages();
+});
+
 $app = AppFactory::createFromContainer($container);
 
 $app->add(TwigMiddleware::createFromContainer($app));
@@ -63,7 +67,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
     $existing = $repoUrls->find('name', $url['name'], $request);
     if ($existing != []) {
-        //$this->get('flash')->addMessage('success', 'Страница уже существует');
+        $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
 
@@ -71,13 +75,13 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
     $repoUrls->save($url, $createdAt, $request, $response);
     $createdUrl = $repoUrls->find('name', $url['name'], $request);
-    // Uncomment after flash is installed and used
-    //$this->get('flash')->addMessage('success', 'Страница успешно добавлена');
+    $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
+    $messages = $this->get('flash')->getMessages();
     $url = $repoUrls->find('id', $args['id'], $request);
 
     if (empty($url)) {
@@ -86,7 +90,8 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
     }
 
     return $this->get('view')->render($response, 'urls/show.twig', [
-        'url' => $url
+        'url' => $url,
+        'messages' => $messages
     ]);
 })->setName('urls.show');
 
