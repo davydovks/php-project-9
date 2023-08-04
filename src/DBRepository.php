@@ -4,7 +4,7 @@ namespace Repository;
 
 use Database\Connection;
 
-class DBRepository implements Repository 
+class DBRepository implements Repository
 {
     private $itemName;
     private \PDO $pdo;
