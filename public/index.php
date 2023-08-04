@@ -13,7 +13,7 @@ use Repository\DBRepository;
 
 session_start();
 
-$repo = new DBRepository('urls');
+$repoUrls = new DBRepository('urls');
 
 $container = new Container();
 
@@ -33,15 +33,15 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
-$app->get('/urls', function ($request, $response) use ($repo) {
-    $urls = $repo->all($request);
+$app->get('/urls', function ($request, $response) use ($repoUrls) {
+    $urls = $repoUrls->all($request);
 
     return $this->get('view')->render($response, 'urls/index.twig', [
         'urls' => $urls
     ]);
 })->setName('urls.index');
 
-$app->post('/urls', function ($request, $response) use ($repo, $router) {
+$app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $url = $request->getParsedBodyParam('url');
 
     $parsedUrl = parse_url($url['name']);
@@ -61,7 +61,7 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
         ]);
     }
 
-    $existing = $repo->find('name', $url['name'], $request);
+    $existing = $repoUrls->find('name', $url['name'], $request);
     if ($existing != []) {
         //$this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
@@ -69,16 +69,16 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
 
     $createdAt = Carbon::now()->toDateTimeString();
 
-    $repo->save($url, $createdAt, $request, $response);
-    $createdUrl = $repo->find('name', $url['name'], $request);
+    $repoUrls->save($url, $createdAt, $request, $response);
+    $createdUrl = $repoUrls->find('name', $url['name'], $request);
     // Uncomment after flash is installed and used
     //$this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
 })->setName('urls.store');
 
-$app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
-    $url = $repo->find('id', $args['id'], $request);
+$app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
+    $url = $repoUrls->find('id', $args['id'], $request);
 
     if (empty($url)) {
         return $this->get('view')->render($response, '404.twig')
