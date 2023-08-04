@@ -94,6 +94,23 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
     ]);
 })->setName('urls.show');
 
+$app->post('/urls/{id}/checks', function ($request, $response, $args) use ($repoUrls, $router) {
+    $url = $repoUrls->find('id', $args['id']);
+
+    if (empty($url)) {
+        $this->get('flash')
+            ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
+
+        return $this->get('view')->render($response, 'oops.twig')
+            ->withStatus(500);
+    }
+
+    // Добавить отправку и обработку HTTP-запроса, сохранение в таблицу checks
+    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+
+    return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+})->setName('checks.store');
+
 $app->get('/assets/{filename}', function ($request, $response, $args) {
     $filename = $args['filename'];
     $path = __DIR__ . "/../assets/{$filename}";
