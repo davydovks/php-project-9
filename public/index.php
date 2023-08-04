@@ -11,8 +11,6 @@ use Valitron\Validator;
 use Carbon\Carbon;
 use Repository\DBRepository;
 
-session_start();
-
 $repoUrls = new DBRepository('urls');
 
 $container = new Container();
