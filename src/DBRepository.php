@@ -46,7 +46,7 @@ class DBRepository implements Repository
             foreach ($stmt as $row) {
                 $result[] = $row;
             }
-            return $result;
+            return $result[0] ?? [];
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
