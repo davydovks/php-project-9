@@ -13,6 +13,7 @@
             {% include 'header.html' with headerParams %}
         {% endblock %}
     </header>
+    {% block flash %}{% endblock %}
     <main class="flex-grow-1">
         {% block content %}{% endblock %}
     </main>
