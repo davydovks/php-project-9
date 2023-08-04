@@ -70,10 +70,11 @@ $app->post('/urls', function ($request, $response) use ($repo, $router) {
     $createdAt = Carbon::now()->toDateTimeString();
 
     $repo->save($url, $createdAt, $request, $response);
+    $createdUrl = $repo->find('name', $url['name'], $request);
     // Uncomment after flash is installed and used
     //$this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
-    return $response->withRedirect($router->urlFor('urls.index'), 302);
+    return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repo) {
