@@ -15,12 +15,18 @@ class DBRepository implements Repository
 
         try {
             $this->pdo = Connection::get()->connect();
-            /*$sql = "CREATE TABLE IF NOT EXISTS {$this->itemName}";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();*/
+            $this->createTablesIfNotExist();
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
+    }
+
+    public function createTablesIfNotExist(): void
+    {
+        $sqlFile = __DIR__ . '/../database/database.sql';
+        $sql = file_get_contents($sqlFile);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
     }
 
     public function save(array $item): void
