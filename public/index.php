@@ -94,8 +94,8 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{id}/checks', function ($request, $response, $args) use ($repoUrls, $router) {
-    $url = $repoUrls->find('id', $args['id']);
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($repoUrls, $router) {
+    $url = $repoUrls->find('id', $args['url_id']);
 
     if (empty($url)) {
         $this->get('flash')
