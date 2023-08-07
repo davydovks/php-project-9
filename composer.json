@@ -31,6 +31,7 @@
         "slim/twig-view": "^3.3",
         "vlucas/valitron": "^1.4",
         "nesbot/carbon": "^2.68",
-        "slim/flash": "^0.4.0"
+        "slim/flash": "^0.4.0",
+        "vlucas/phpdotenv": "^5.5"
     }
 }
