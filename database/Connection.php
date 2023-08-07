@@ -23,8 +23,12 @@ final class Connection
     public function connect()
     {
         // чтение параметров из переменной окружения
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-        $dotenv->load();
+        $envPath = __DIR__ . '/../';
+        if (file_exists($envPath . '.env')) {
+            $dotenv = Dotenv::createImmutable($envPath);
+            $dotenv->load();
+        }
+
         $databaseUrl = parse_url($_ENV['DATABASE_URL']);
 
         // подключение к базе данных postgresql
