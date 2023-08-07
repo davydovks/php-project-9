@@ -2,6 +2,8 @@
 
 namespace Database;
 
+use Dotenv\Dotenv;
+
 /**
  * Создание класса Connection
  */
@@ -20,20 +22,19 @@ final class Connection
      */
     public function connect()
     {
-        // чтение параметров в файле конфигурации ini
-        $params = parse_ini_file('database.ini');
-        if ($params === false) {
-            throw new \Exception("Error reading database configuration file");
-        }
+        // чтение параметров из переменной окружения
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
+        $databaseUrl = parse_url($_ENV['DATABASE_URL']);
 
         // подключение к базе данных postgresql
         $conStr = sprintf(
             "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
-            $params['host'],
-            $params['port'],
-            $params['database'],
-            $params['user'],
-            $params['password']
+            $databaseUrl['host'],
+            $databaseUrl['port'],
+            ltrim($databaseUrl['path'], '/'),
+            $databaseUrl['user'],
+            $databaseUrl['pass']
         );
 
         $pdo = new \PDO($conStr);
