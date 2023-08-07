@@ -1,7 +1,8 @@
 -- DROP TABLE IF EXISTS checks;
-CREATE TABLE IF NOT EXISTS checks (
+CREATE TABLE IF NOT EXISTS url_checks (
     id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    status int,
+    url_id bigint REFERENCES urls (id),
+    status_code int,
     h1 varchar(255),
     title varchar(255),
     descritpion varchar(255),
