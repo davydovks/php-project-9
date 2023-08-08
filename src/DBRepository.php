@@ -15,8 +15,7 @@ class DBRepository implements Repository
 
         try {
             $this->pdo = Connection::get()->connect();
-            $this->createTableIfNotExists('urls');
-            $this->createTableIfNotExists('checks');
+            $this->createTableIfNotExists($itemName);
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
