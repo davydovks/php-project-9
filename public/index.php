@@ -38,11 +38,16 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
-$app->get('/urls', function ($request, $response) use ($repoUrls) {
+$app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
     $urls = $repoUrls->all($request);
+    $urlsEnriched = array_map(function ($url) use ($repoChecks) {
+        $check = $repoChecks->findLast('url_id', $url['id']);
+        $url['lastCheckAt'] = $check['created_at'];
+        return $url;
+    }, $urls);
 
     return $this->get('view')->render($response, 'urls/index.twig', [
-        'urls' => $urls
+        'urls' => $urlsEnriched
     ]);
 })->setName('urls.index');
 
