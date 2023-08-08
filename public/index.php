@@ -42,7 +42,10 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
     $urls = $repoUrls->all($request);
     $urlsEnriched = array_map(function ($url) use ($repoChecks) {
         $check = $repoChecks->findLast('url_id', $url['id']);
-        $url['lastCheckAt'] = $check['created_at'];
+        if (!empty($check)) {
+            $url['lastCheckAt'] = $check['created_at'];
+        }
+
         return $url;
     }, $urls);
 
