@@ -64,6 +64,19 @@ class DBRepository implements Repository
         }
     }
 
+    public function findLast(string $field, mixed $value): array
+    {
+        $sql = "SELECT * FROM {$this->itemName} WHERE {$field} = '{$value}' ORDER BY id DESC LIMIT 1";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return is_array($row) ? $row : [];
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
     public function all(): array
     {
         $sql = "SELECT * FROM {$this->itemName} ORDER BY id DESC";
