@@ -47,6 +47,18 @@
                 <th>Дата создания</th>
             </tr>
             <!--?php foreach ($checks as $check): ?-->
+            {% for check in checks %}
+                {% if check.url_id == url.id %}
+                    <tr>
+                        <td>{{ check.id }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ check.created_at }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
         </tbody>
     </table>
 </div>

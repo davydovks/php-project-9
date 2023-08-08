@@ -14,6 +14,7 @@ use Repository\DBRepository;
 session_start();
 
 $repoUrls = new DBRepository('urls');
+$repoChecks = new DBRepository('url_checks');
 
 $container = new Container();
 
@@ -79,7 +80,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
 })->setName('urls.store');
 
-$app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
+$app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
     $messages = $this->get('flash')->getMessages();
     $url = $repoUrls->find('id', $args['id'], $request);
 
@@ -88,13 +89,16 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls) {
             ->withStatus(404);
     }
 
+    $checks = $repoChecks->all();
+
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
+        'checks' => $checks,
         'messages' => $messages
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($repoUrls, $router) {
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($repoUrls, $repoChecks, $router) {
     $url = $repoUrls->find('id', $args['url_id']);
 
     if (empty($url)) {
@@ -105,7 +109,12 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
             ->withStatus(500);
     }
 
-    // Добавить отправку и обработку HTTP-запроса, сохранение в таблицу checks
+    // Добавить отправку и обработку HTTP-запроса
+    $check = [
+        'url_id' => $url['id'],
+        'created_at' => Carbon::now()->toDateTimeString()
+    ];
+    $repoChecks->save($check);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
