@@ -51,10 +51,10 @@
                 {% if check.url_id == url.id %}
                     <tr>
                         <td>{{ check.id }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{{ check.status_code }}</td>
+                        <td class="text-break">{{ check.h1 }}</td>
+                        <td class="text-break">{{ check.title }}</td>
+                        <td class="text-break">{{ check.description }}</td>
                         <td>{{ check.created_at }}</td>
                     </tr>
                 {% endif %}
