@@ -39,7 +39,7 @@ $app->get('/', function ($request, $response) {
 })->setName('home');
 
 $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
-    $urls = $repoUrls->all($request);
+    $urls = $repoUrls->all();
     $urlsEnriched = array_map(function ($url) use ($repoChecks) {
         $check = $repoChecks->findLast('url_id', $url['id']);
         if (!empty($check)) {
@@ -74,15 +74,15 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
         ]);
     }
 
-    $existing = $repoUrls->find('name', $url['name'], $request);
+    $existing = $repoUrls->find('name', $url['name']);
     if ($existing != []) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
 
     $url['created_at'] = Carbon::now()->toDateTimeString();
-    $repoUrls->save($url, $request, $response);
-    $createdUrl = $repoUrls->find('name', $url['name'], $request);
+    $repoUrls->save($url);
+    $createdUrl = $repoUrls->find('name', $url['name']);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
@@ -90,7 +90,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
     $messages = $this->get('flash')->getMessages();
-    $url = $repoUrls->find('id', $args['id'], $request);
+    $url = $repoUrls->find('id', $args['id']);
 
     if (empty($url)) {
         return $this->get('view')->render($response, '404.twig')
