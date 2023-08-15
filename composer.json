@@ -32,6 +32,7 @@
         "vlucas/valitron": "^1.4",
         "nesbot/carbon": "^2.68",
         "slim/flash": "^0.4.0",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "guzzlehttp/guzzle": "^7.7"
     }
 }
