@@ -36,7 +36,9 @@ $app->addErrorMiddleware(true, true, true);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) {
-    return $this->get('view')->render($response, 'index.twig');
+    return $this->get('view')->render($response, 'index.twig', [
+        'messages' => $this->get('flash')->getMessages()
+    ]);
 })->setName('home');
 
 $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
@@ -52,7 +54,8 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
     }, $urls);
 
     return $this->get('view')->render($response, 'urls/index.twig', [
-        'urls' => $urlsEnriched
+        'urls' => $urlsEnriched,
+        'messages' => $this->get('flash')->getMessages()
     ]);
 })->setName('urls.index');
 
@@ -91,7 +94,6 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
-    $messages = $this->get('flash')->getMessages();
     $url = $repoUrls->find('id', $args['id']);
 
     if (empty($url)) {
@@ -104,7 +106,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $r
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
         'checks' => $checks,
-        'messages' => $messages
+        'messages' => $this->get('flash')->getMessages()
     ]);
 })->setName('urls.show');
 
