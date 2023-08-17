@@ -109,20 +109,21 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $r
 
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($repoUrls, $repoChecks, $router) {
     $url = $repoUrls->find('id', $args['url_id']);
+    $check = Parser::getUrlData($url);
 
-    if (empty($url)) {
-        $this->get('flash')
-            ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
+    $pageLoadedSuccessfully = isset($check['status_code']) && $check['status_code'] == 200;
 
-        return $this->get('view')->render($response, 'oops.twig')
-            ->withStatus(500);
+    if ($pageLoadedSuccessfully) {
+        $repoChecks->save($check);
+        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+    
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
     }
 
-    $check = Parser::getUrlData($url);
-    $repoChecks->save($check);
-    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
-
-    return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    $this->get('flash')
+        ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
+    return $this->get('view')->render($response, 'oops.twig')
+        ->withStatus(500);
 })->setName('checks.store');
 
 $app->get('/assets/{filename}', function ($request, $response, $args) {
