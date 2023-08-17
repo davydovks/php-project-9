@@ -45,6 +45,7 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
         $check = $repoChecks->findLast('url_id', $url['id']);
         if (!empty($check)) {
             $url['lastCheckAt'] = $check['created_at'];
+            $url['lastCheckStatus'] = $check['status_code'];
         }
 
         return $url;
