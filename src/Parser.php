@@ -19,9 +19,9 @@ class Parser
             $check = [
                 'url_id' => $url['id'],
                 'status_code' => $urlResponse->getStatusCode(),
-                'h1' => $h1Matches[0],
-                'title' => $titleMatches[0],
-                'description' => $descMatches[0],
+                'h1' => substr($h1Matches[0], 0, 255),
+                'title' => substr($titleMatches[0], 0, 255),
+                'description' => substr($descMatches[0], 0, 255),
                 'created_at' => Carbon::now()->toDateTimeString()
             ];
         } catch (Exception $e) {
