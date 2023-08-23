@@ -11,7 +11,7 @@ class Parser
     {
         $client = new Client();
         try {
-            $urlResponse = $client->request('GET', $url['name']);
+            $urlResponse = $client->get($url['name']);
             $body = $urlResponse->getBody();
             preg_match('/(?<=>)(.*?)(?=<\/h1>)/', $body, $h1Matches);
             preg_match('/(?<=title>)(.*?)(?=<\/title>)/', $body, $titleMatches);
