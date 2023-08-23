@@ -3,13 +3,13 @@
 namespace PageAnalyzer;
 
 use Carbon\Carbon;
-use Exception;
+use GuzzleHttp\Client;
 
 class Parser
 {
     public static function getUrlData(array $url): array
     {
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
         try {
             $urlResponse = $client->request('GET', $url['name']);
             $body = $urlResponse->getBody();
@@ -24,7 +24,7 @@ class Parser
                 'description' => substr($descMatches[0], 0, 255),
                 'created_at' => Carbon::now()->toDateTimeString()
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $check = [];
         } 
 
