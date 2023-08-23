@@ -4,6 +4,7 @@ namespace PageAnalyzer;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use DiDom\Document;
 
 class Parser
 {
@@ -12,22 +13,23 @@ class Parser
         $client = new Client();
         try {
             $urlResponse = $client->get($url['name']);
-            $body = $urlResponse->getBody();
-            preg_match('/(?<=>)(.*?)(?=<\/h1>)/', $body, $h1Matches);
-            preg_match('/(?<=title>)(.*?)(?=<\/title>)/', $body, $titleMatches);
-            preg_match('/(?<=\<meta name=\"description\" content=\")(.*?)(?=\">)/', $body, $descMatches);
+
+            $document = new Document($url['name'], true);
+            $h1 = $document->find('h1')[0]->innerHtml() ?? '';
+            $title = $document->find('title')[0]->innerHtml() ?? '';
+            $description = $document->find('meta[name=description]')[0]->content ?? '';
+
             $check = [
                 'url_id' => $url['id'],
                 'status_code' => $urlResponse->getStatusCode(),
-                'h1' => substr($h1Matches[0], 0, 255),
-                'title' => substr($titleMatches[0], 0, 255),
-                'description' => substr($descMatches[0], 0, 255),
+                'h1' => mb_substr($h1, 0, 255),
+                'title' => mb_substr($title, 0, 255),
+                'description' => mb_substr($description, 0, 255),
                 'created_at' => Carbon::now()->toDateTimeString()
             ];
         } catch (\Exception $e) {
             $check = [];
         }
-
         return $check;
     }
 }
