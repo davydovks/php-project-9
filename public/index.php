@@ -119,7 +119,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     if ($pageLoadedSuccessfully) {
         $repoChecks->save($check);
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
-    
+
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
     }
 

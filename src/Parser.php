@@ -26,7 +26,7 @@ class Parser
             ];
         } catch (\Exception $e) {
             $check = [];
-        } 
+        }
 
         return $check;
     }
