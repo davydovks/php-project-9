@@ -63,6 +63,7 @@ class DBRepository implements Repository
             return is_array($row) ? $row : [];
         } catch (\PDOException $e) {
             echo $e->getMessage();
+            return [];
         }
     }
 
@@ -80,6 +81,7 @@ class DBRepository implements Repository
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
+            return [];
         }
     }
 
