@@ -60,34 +60,35 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
 })->setName('urls.index');
 
 $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
-    $url = $request->getParsedBodyParam('url');
+    $enteredUrl = $request->getParsedBodyParam('url');
 
-    $parsedUrl = parse_url($url['name']);
+    $parsedUrl = parse_url($enteredUrl['name']);
     $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
     $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-    $url['name'] = "{$scheme}{$host}";
+    $normalizedUrl = ['name' => "{$scheme}{$host}"];
 
-    $validator = new Validator($url);
+    $validator = new Validator($normalizedUrl);
     $validator->rule('required', 'name');
     $validator->rule('url', 'name');
     $validator->rule('lengthMax', 'name', 255);
 
     if (!$validator->validate()) {
         return $this->get('view')->render($response, 'index.twig', [
-            'url' => $url,
+            'url' => $enteredUrl,
+            'messages' => $this->get('flash')->getMessages(),
             'errors' => $validator->errors()
         ]);
     }
 
-    $existing = $repoUrls->find('name', $url['name']);
+    $existing = $repoUrls->find('name', $normalizedUrl['name']);
     if ($existing != []) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
 
-    $url['created_at'] = Carbon::now()->toDateTimeString();
-    $repoUrls->save($url);
-    $createdUrl = $repoUrls->find('name', $url['name']);
+    $normalizedUrl['created_at'] = Carbon::now()->toDateTimeString();
+    $repoUrls->save($normalizedUrl);
+    $createdUrl = $repoUrls->find('name', $normalizedUrl['name']);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
