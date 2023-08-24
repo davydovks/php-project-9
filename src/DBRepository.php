@@ -51,9 +51,11 @@ class DBRepository implements Repository
         }
     }
 
-    public function find(string $field, mixed $value): array
+    public function find(string $field, mixed $value, bool $last = false): array
     {
-        $sql = "SELECT * FROM {$this->itemName} WHERE {$field} = '{$value}'";
+        $select = "SELECT * FROM {$this->itemName} WHERE {$field} = '{$value}'";
+        $orderBy = " ORDER BY id DESC LIMIT 1";
+        $sql = $last ? $select . $orderBy : $select;
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -66,15 +68,7 @@ class DBRepository implements Repository
 
     public function findLast(string $field, mixed $value): array
     {
-        $sql = "SELECT * FROM {$this->itemName} WHERE {$field} = '{$value}' ORDER BY id DESC LIMIT 1";
-        try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-            return is_array($row) ? $row : [];
-        } catch (\PDOException $e) {
-            echo $e->getMessage();
-        }
+        return $this->find($field, $value, true);
     }
 
     public function all(): array
