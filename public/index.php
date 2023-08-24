@@ -61,11 +61,7 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
 
 $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
-
-    $parsedUrl = parse_url($enteredUrl['name']);
-    $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-    $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-    $normalizedUrl = ['name' => "{$scheme}{$host}"];
+    $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
     $validator = new Validator($normalizedUrl);
     $validator->rule('required', 'name');
