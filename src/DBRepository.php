@@ -6,7 +6,7 @@ use Database\Connection;
 
 class DBRepository implements Repository
 {
-    private $itemName;
+    private string $itemName;
     private \PDO $pdo;
 
     public function __construct(string $itemName)
@@ -25,8 +25,12 @@ class DBRepository implements Repository
     {
         $sqlFile = __DIR__ . "/../database/{$tableName}.sql";
         $sql = file_get_contents($sqlFile);
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+        if ($sql) {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+        } else {
+            throw new \LogicException("File not found: {$sqlFile}");
+        }
     }
 
     public function save(array $item): void
