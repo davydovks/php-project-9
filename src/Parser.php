@@ -15,9 +15,9 @@ class Parser
             $urlResponse = $client->get($url['name']);
 
             $document = new Document($url['name'], true);
-            $h1 = optional($document->find('h1')[0])->innerHtml() ?? '';
-            $title = optional($document->find('title')[0])->innerHtml() ?? '';
-            $description = optional($document->find('meta[name=description]')[0])->content ?? '';
+            $h1 = optional($document->first('h1'))->innerHtml() ?? '';
+            $title = optional($document->first('title'))->innerHtml() ?? '';
+            $description = optional($document->first('meta[name=description]'))->content ?? '';
 
             $check = [
                 'url_id' => $url['id'],
