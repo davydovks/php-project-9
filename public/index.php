@@ -77,7 +77,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
             'url' => $enteredUrl,
             'messages' => $this->get('flash')->getMessages(),
             'errors' => $validator->errors()
-        ]);
+        ])->withStatus(422);
     }
 
     $existing = $repoUrls->find('name', $normalizedUrl['name']);
