@@ -9,7 +9,6 @@
         "files": [
             "src/Parser.php",
             "src/Repository.php",
-            "src/CookieRepository.php",
             "src/DBRepository.php"
         ]
     },
