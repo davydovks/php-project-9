@@ -3,13 +3,13 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Hexlet\\Code\\": "src/",
-            "Database\\": "database/"
+            "Hexlet\\Code\\": "src/"
         },
         "files": [
             "src/Parser.php",
             "src/Repository.php",
-            "src/DBRepository.php"
+            "src/DBRepository.php",
+            "src/Connection.php"
         ]
     },
     "authors": [

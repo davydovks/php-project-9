@@ -62,6 +62,5 @@ final class Connection
 
     protected function __construct()
     {
-
     }
 }
