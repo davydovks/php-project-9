@@ -7,10 +7,12 @@ use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
-use Valitron\Validator;
 use Carbon\Carbon;
 use PageAnalyzer\Parser;
 use Repository\DBRepository;
+
+use function Validator\createNameValidator;
+use function Validator\translateNameValidationErrors;
 
 session_start();
 
@@ -61,27 +63,26 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
 
 $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
-    $normalizedUrl = Parser::normalizeUrl($enteredUrl);
-
-    $validator = new Validator($normalizedUrl);
-    $validator->rule('required', 'name');
-    $validator->rule('url', 'name');
-    $validator->rule('lengthMax', 'name', 255);
-
+    $validator = createNameValidator($enteredUrl);
+    
     if (!$validator->validate()) {
+        $errors = $validator->errors();
+        $translatedErrors = translateNameValidationErrors($errors);
         return $this->get('view')->render($response, 'index.twig', [
             'url' => $enteredUrl,
             'messages' => $this->get('flash')->getMessages(),
-            'errors' => $validator->errors()
+            'errors' => $translatedErrors
         ])->withStatus(422);
     }
+
+    $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
     $existing = $repoUrls->find('name', $normalizedUrl['name']);
     if ($existing != []) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
-
+        
     $normalizedUrl['created_at'] = Carbon::now()->toDateTimeString();
     $repoUrls->save($normalizedUrl);
     $createdUrl = $repoUrls->find('name', $normalizedUrl['name']);
