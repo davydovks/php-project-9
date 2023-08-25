@@ -124,21 +124,24 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     $check = Parser::getUrlData($url);
 
     if (!isset($check['status_code'])) {
-        $messageType = 'danger';
-        $message = 'Произошла ошибка при проверке, не удалось подключиться';
+        $this->get('flash')
+                ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
     } else {
-        $repoChecks->save($check);
-        
         if ($check['status_code'] == 200) {
-            $messageType = 'success';
-            $message = 'Страница успешно проверена';
+            $this->get('flash')
+                ->addMessage('success', 'Страница успешно проверена');
         } else {
-            $messageType = 'warning';
-            $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
+            $this->get('flash')
+                ->addMessage('warning', 'Проверка была выполнена успешно, но сервер ответил с ошибкой');
         }
-    }
 
-    $this->get('flash')->addMessage($messageType, $message);
+        if (!isset($check['url_id'])) {
+            return $this->get('view')->render($response, 'oops.twig')
+                ->withStatus(500);
+        }
+
+        $repoChecks->save($check);
+    }
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
 })->setName('checks.store');
