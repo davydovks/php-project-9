@@ -148,7 +148,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
 
 $app->get('/assets/{filename}', function ($request, $response, $args) {
     $filename = $args['filename'];
-    $path = __DIR__ . "/../assets/{$filename}";
+    $path = __DIR__ . "/assets/{$filename}";
     $image = file_get_contents($path);
     if ($image === false) {
         $handler = $this->notFoundHandler;
