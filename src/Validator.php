@@ -31,3 +31,12 @@ function translateNameValidationErrors($errors)
     }
     return ['name' => $message];
 }
+
+function createIdValidator(array $args): Validator
+{
+    $validator = new Validator($args);
+    $validator->rule('required', 'id');
+    $validator->rule('integer', 'id');
+
+    return $validator;
+}

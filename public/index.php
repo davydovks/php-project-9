@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use PageAnalyzer\Parser;
 use Repository\DBRepository;
 
+use function Validator\createIdValidator;
 use function Validator\createNameValidator;
 use function Validator\translateNameValidationErrors;
 
@@ -92,13 +93,13 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
-    $id = $args['id'];
-    $correctIdType = is_int($id);
-    if ($correctIdType) {
-        $url = $repoUrls->find('id', $id);
+    $idValidator = createIdValidator($args);
+    $idValidated = $idValidator->validate();
+    if ($idValidated) {
+        $url = $repoUrls->find('id', $args['id']);
     }
 
-    if ((!$correctIdType) || empty($url)) {
+    if ((!$idValidated) || empty($url)) {
         return $this->get('view')->render($response, '404.twig')
             ->withStatus(404);
     }
