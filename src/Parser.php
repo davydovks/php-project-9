@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use DiDom\Document;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 
 class Parser
@@ -20,6 +21,8 @@ class Parser
             $urlResponse = $e->getResponse();
         } catch (ConnectException | ServerException) {
             return [];
+        } catch (RequestException) {
+            return ['status_code' => 500];
         }
 
         $document = new Document($urlResponse->getBody()->__toString());
