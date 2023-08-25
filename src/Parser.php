@@ -5,6 +5,9 @@ namespace PageAnalyzer;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use DiDom\Document;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 
 class Parser
 {
@@ -13,23 +16,26 @@ class Parser
         $client = new Client();
         try {
             $urlResponse = $client->get($url['name']);
-
-            $document = new Document($url['name'], true);
-            $h1 = optional($document->first('h1'))->innerHtml() ?? '';
-            $title = optional($document->first('title'))->innerHtml() ?? '';
-            $description = optional($document->first('meta[name=description]'))->content ?? '';
-
-            $check = [
-                'url_id' => $url['id'],
-                'status_code' => optional($urlResponse)->getStatusCode(),
-                'h1' => mb_substr($h1, 0, 255),
-                'title' => mb_substr($title, 0, 255),
-                'description' => mb_substr($description, 0, 255),
-                'created_at' => Carbon::now()->toDateTimeString()
-            ];
-        } catch (\Exception $e) {
-            $check = [];
+        } catch (ClientException $e) {
+            $urlResponse = $e->getResponse();
+        } catch (ConnectException | ServerException) {
+            return [];
         }
+
+        $document = new Document($urlResponse->getBody()->__toString());
+        $h1 = optional($document->first('h1'))->innerHtml() ?? '';
+        $title = optional($document->first('title'))->innerHtml() ?? '';
+        $description = optional($document->first('meta[name=description]'))->content ?? '';
+
+        $check = [
+            'url_id' => $url['id'],
+            'status_code' => $urlResponse->getStatusCode(),
+            'h1' => mb_substr($h1, 0, 255),
+            'title' => mb_substr($title, 0, 255),
+            'description' => mb_substr($description, 0, 255),
+            'created_at' => Carbon::now()->toDateTimeString()
+        ];
+
         return $check;
     }
 
