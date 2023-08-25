@@ -123,27 +123,23 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
 
     $check = Parser::getUrlData($url);
 
-    $pageLoadedSuccessfully = isset($check['status_code']) && $check['status_code'] == 200;
-
-    if ($pageLoadedSuccessfully) {
+    if (!isset($check['status_code'])) {
+        $messageType = 'danger';
+        $message = 'Произошла ошибка при проверке, не удалось подключиться';
+    } else {
         $repoChecks->save($check);
-        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+        
+        if ($check['status_code'] == 200) {
+            $messageType = 'success';
+            $message = 'Страница успешно проверена';
+        } else {
+            $messageType = 'warning';
+            $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
+        }
     }
 
-    $internalServerError = isset($check['status_code']) && $check['status_code'] == 500;
+    $this->get('flash')->addMessage($messageType, $message);
 
-    if ($internalServerError) {
-        $this->get('flash')->addMessage(
-            'warning',
-            'Проверка была выполнена успешно, но сервер ответил с ошибкой'
-        );
-        return $this->get('view')->render($response, 'oops.twig')
-            ->withStatus(500);
-    }
-
-    $this->get('flash')
-        ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
 })->setName('checks.store');
 
