@@ -92,9 +92,13 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 })->setName('urls.store');
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
-    $url = $repoUrls->find('id', $args['id']);
+    $id = $args['id'];
+    $correctIdType = is_int($id);
+    if ($correctIdType) {
+        $url = $repoUrls->find('id', $id);
+    }
 
-    if (empty($url)) {
+    if ((!$correctIdType) || empty($url)) {
         return $this->get('view')->render($response, '404.twig')
             ->withStatus(404);
     }
