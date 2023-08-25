@@ -64,7 +64,7 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
 $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
     $validator = createNameValidator($enteredUrl);
-    
+
     if (!$validator->validate()) {
         $errors = $validator->errors();
         $translatedErrors = translateNameValidationErrors($errors);
@@ -82,7 +82,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
     }
-        
+
     $normalizedUrl['created_at'] = Carbon::now()->toDateTimeString();
     $repoUrls->save($normalizedUrl);
     $createdUrl = $repoUrls->find('name', $normalizedUrl['name']);
