@@ -90,10 +90,10 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
     $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
-    $existing = $repoUrls->find('name', $normalizedUrl['name']);
-    if ($existing != []) {
+    $existingUrl = $repoUrls->find('name', $normalizedUrl['name']);
+    if ($existingUrl != []) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existing['id']]), 302);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl['id']]), 302);
     }
 
     $normalizedUrl['created_at'] = Carbon::now()->toDateTimeString();
@@ -106,12 +106,12 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
 $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
     $idValidator = createIdValidator($args);
-    $idValidated = $idValidator->validate();
-    if ($idValidated) {
+    $idIsValid = $idValidator->validate();
+    if ($idIsValid) {
         $url = $repoUrls->find('id', $args['id']);
     }
 
-    if ((!$idValidated) || empty($url)) {
+    if ((!$idIsValid) || empty($url)) {
         return $this->get('view')->render($response, '404.twig')
             ->withStatus(404);
     }
