@@ -14,7 +14,7 @@ function createNameValidator(array $normalizedUrl): Validator
     return $validator;
 }
 
-function translateNameValidationErrors($errors)
+function translateNameValidationErrors(array|bool $errors)
 {
     if (!isset($errors['name'])) {
         return [];
