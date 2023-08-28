@@ -34,7 +34,19 @@ $app = AppFactory::createFromContainer($container);
 
 $app->add(TwigMiddleware::createFromContainer($app));
 $app->add(MethodOverrideMiddleware::class);
-$app->addErrorMiddleware(true, true, true);
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
+$customErrorHandler = function ($request, $exception) use ($app) {
+    $response = $app->getResponseFactory()->createResponse();
+    if ($exception->getCode() == 404) {
+        return $this->get('view')->render($response, '404.twig')
+            ->withStatus(404);
+    }
+
+    return $response;
+};
+
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 $router = $app->getRouteCollector()->getRouteParser();
 
