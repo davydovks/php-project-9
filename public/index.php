@@ -39,7 +39,7 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $customErrorHandler = function ($request, $exception) use ($app) {
     $response = $app->getResponseFactory()->createResponse();
     if ($exception->getCode() == 404) {
-        return $this->get('view')->render($response, '404.twig')
+        return $this->get('view')->render($response, 'errors/404.twig')
             ->withStatus(404);
     }
 
@@ -112,7 +112,7 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($repoUrls, $r
     }
 
     if ((!$idIsValid) || empty($url)) {
-        return $this->get('view')->render($response, '404.twig')
+        return $this->get('view')->render($response, 'errors/404.twig')
             ->withStatus(404);
     }
 
@@ -129,7 +129,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     $url = $repoUrls->find('id', $args['url_id']);
 
     if (empty($url)) {
-        return $this->get('view')->render($response, '500.twig')
+        return $this->get('view')->render($response, 'errors/500.twig')
             ->withStatus(500);
     }
 
@@ -148,7 +148,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         }
 
         if (!isset($check['url_id'])) {
-            return $this->get('view')->render($response, '500.twig')
+            return $this->get('view')->render($response, 'errors/500.twig')
                 ->withStatus(500);
         }
 
