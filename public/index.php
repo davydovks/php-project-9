@@ -129,7 +129,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     $url = $repoUrls->find('id', $args['url_id']);
 
     if (empty($url)) {
-        return $this->get('view')->render($response, 'oops.twig')
+        return $this->get('view')->render($response, '500.twig')
             ->withStatus(500);
     }
 
@@ -148,7 +148,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         }
 
         if (!isset($check['url_id'])) {
-            return $this->get('view')->render($response, 'oops.twig')
+            return $this->get('view')->render($response, '500.twig')
                 ->withStatus(500);
         }
 
