@@ -10,7 +10,7 @@
 <body class="min-vh-100 d-flex flex-column">
     <header class="flex-shrink-0">
         {% block header %}
-            {% include 'header.twig' with headerParams %}
+            {% include 'blocks/header.twig' with headerParams %}
         {% endblock %}
     </header>
     {% block flash %}{% endblock %}
@@ -19,7 +19,7 @@
     </main>
     <footer class="border-top py-3 mt-5 flex-shrink-0">
         {% block footer %}
-            {% include 'footer.html' %}
+            {% include 'blocks/footer.html' %}
         {% endblock %}
     </footer>
 </body>
