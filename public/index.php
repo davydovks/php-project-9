@@ -156,7 +156,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     }
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
-})->setName('checks.store');
+})->setName('urls.checks.store');
 
 $app->get('/assets/{filename}', function ($request, $response, $args) {
     $filename = $args['filename'];
