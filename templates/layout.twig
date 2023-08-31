@@ -10,7 +10,7 @@
 <body class="min-vh-100 d-flex flex-column">
     <header class="flex-shrink-0">
         {% block header %}
-            {% include 'header.html' with headerParams %}
+            {% include 'header.twig' with headerParams %}
         {% endblock %}
     </header>
     {% block flash %}{% endblock %}
