@@ -2,23 +2,22 @@ name: php_codesniffer;
 
 on:
   push:
-    branches:
-      - '**'
-    tags:
-      - '**'
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   phpcs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: php-actions/composer@v6
+        
+      - name: Setup PHP with Xdebug
+        uses: shivammathur/setup-php@v2
         with:
-          fetch-depth: 0 # important!
-
-      - name: Install PHP_CodeSniffer
-        run: |
-          curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
-          php phpcs.phar --version
-
-      - name: Run phpcs
-        run: composer exec --verbose phpcs -- --standard=PSR12 src public
+          php-version: '8.2'
+          coverage: xdebug
+  
+      - name: Run Linter
+        run: make lint
