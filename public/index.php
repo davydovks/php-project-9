@@ -91,7 +91,7 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
     $existingUrl = $repoUrls->find('name', $normalizedUrl['name']);
-    if ($existingUrl != []) {
+    if (!empty($existingUrl)) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl['id']]), 302);
     }
