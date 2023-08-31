@@ -13,7 +13,9 @@
             {% include 'blocks/header.twig' with headerParams %}
         {% endblock %}
     </header>
-    {% block flash %}{% endblock %}
+    {% block flash %}
+        {% include 'blocks/flash.twig' with messages %}
+    {% endblock %}
     <main class="flex-grow-1">
         {% block content %}{% endblock %}
     </main>
