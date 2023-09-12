@@ -21,12 +21,14 @@ $repoChecks = new DBRepository('url_checks');
 
 $container = new Container();
 
-$container->set('view', function () {
-    return Twig::create(__DIR__ . '/../templates');
-});
-
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
+});
+
+$container->set('view', function () use ($container) {
+    $view = Twig::create(__DIR__ . '/../templates');
+    $view->getEnvironment()->addGlobal('messages', $container->get('flash')->getMessages());
+    return $view;
 });
 
 $app = AppFactory::createFromContainer($container);
@@ -50,9 +52,7 @@ $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) {
-    return $this->get('view')->render($response, 'index.twig', [
-        'messages' => $this->get('flash')->getMessages()
-    ]);
+    return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
 $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
@@ -68,8 +68,7 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
     }, $urls);
 
     return $this->get('view')->render($response, 'urls/index.twig', [
-        'urls' => $urlsEnriched,
-        'messages' => $this->get('flash')->getMessages()
+        'urls' => $urlsEnriched
     ]);
 })->setName('urls.index');
 
@@ -82,7 +81,6 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
         $translatedErrors = translateNameValidationErrors($errors);
         return $this->get('view')->render($response, 'index.twig', [
             'url' => $enteredUrl,
-            'messages' => $this->get('flash')->getMessages(),
             'errors' => $translatedErrors
         ])->withStatus(422);
     }
@@ -115,8 +113,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($repoU
 
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
-        'checks' => $checks,
-        'messages' => $this->get('flash')->getMessages()
+        'checks' => $checks
     ]);
 })->setName('urls.show');
 
