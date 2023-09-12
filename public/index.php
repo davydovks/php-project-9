@@ -128,25 +128,27 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     $check = Parser::getUrlData($url);
 
     if (!isset($check['status_code'])) {
-        $this->get('flash')
-                ->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
-    } else {
-        if ($check['status_code'] == 200) {
-            $this->get('flash')
-                ->addMessage('success', 'Страница успешно проверена');
-        } else {
-            $this->get('flash')
-                ->addMessage('warning', 'Проверка была выполнена успешно, но сервер ответил с ошибкой');
-        }
-
-        if (!isset($check['url_id'])) {
-            return $this->get('view')->render($response, 'errors/500.twig')
-                ->withStatus(500);
-        }
-
+        $message = 'Произошла ошибка при проверке, не удалось подключиться';
+        $this->get('flash')->addMessage('danger', $message);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    }
+    
+    if ($check['status_code'] == 200) {
+        $message = 'Страница успешно проверена';
+        $this->get('flash')->addMessage('success', $message);
         $repoChecks->save($check);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    }
+    
+    $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
+    $this->get('flash')->addMessage('warning', $message);
+
+    if (!isset($check['url_id'])) {
+        return $this->get('view')->render($response, 'errors/500.twig')
+            ->withStatus(500);
     }
 
+    $repoChecks->save($check);
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
 })->setName('urls.checks.store');
 
