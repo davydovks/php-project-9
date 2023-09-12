@@ -132,14 +132,14 @@ $app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args)
         $this->get('flash')->addMessage('danger', $message);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
     }
-    
+
     if ($check['status_code'] == 200) {
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
         $repoChecks->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
     }
-    
+
     $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
     $this->get('flash')->addMessage('warning', $message);
 
