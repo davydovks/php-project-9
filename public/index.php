@@ -117,7 +117,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($repoU
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($repoUrls, $repoChecks, $router) {
+$app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args) use ($repoUrls, $repoChecks, $router) {
     $url = $repoUrls->find('id', $args['url_id']);
 
     if (empty($url)) {
