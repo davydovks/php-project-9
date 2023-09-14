@@ -17,8 +17,6 @@ use PageAnalyzer\Parser;
 use Repository\DBRepository;
 use Valitron\Validator;
 
-use function Validator\translateNameValidationErrors;
-
 session_start();
 
 $repoUrls = new DBRepository('urls');
@@ -81,16 +79,14 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
 
     $validator = new Validator($enteredUrl);
-    $validator->rule('required', 'name');
-    $validator->rule('url', 'name');
-    $validator->rule('lengthMax', 'name', 255);
+    $validator->rule('required', 'name')->message('URL не должен быть пустым');
+    $validator->rule('url', 'name')->message('Некорректный URL');
+    $validator->rule('lengthMax', 'name', 255)->message('Некорректный URL');
 
     if (!$validator->validate()) {
-        $errors = $validator->errors();
-        $translatedErrors = translateNameValidationErrors($errors);
         return $this->get('view')->render($response, 'index.twig', [
             'url' => $enteredUrl,
-            'errors' => $translatedErrors
+            'errors' => $validator->errors()
         ])->withStatus(422);
     }
 
