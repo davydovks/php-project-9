@@ -15,21 +15,8 @@ class DBRepository implements Repository
 
         try {
             $this->pdo = Connection::get()->connect();
-            $this->createTableIfNotExists($itemName);
         } catch (\PDOException $e) {
             echo $e->getMessage();
-        }
-    }
-
-    public function createTableIfNotExists(string $tableName): void
-    {
-        $sqlFile = __DIR__ . "/../database/{$tableName}.sql";
-        $sql = file_get_contents($sqlFile);
-        if ($sql) {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-        } else {
-            throw new \LogicException("File not found: {$sqlFile}");
         }
     }
 
