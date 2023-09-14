@@ -26,16 +26,12 @@ class Parser
         return $check;
     }
 
-    public static function normalizeUrl(mixed $rawUrl): array
+    public static function normalizeUrl(array $rawUrl): array
     {
-        if (isset($rawUrl['name'])) {
-            $parsedUrl = parse_url($rawUrl['name']);
-            $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-            $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-            $normalizedUrl = mb_strtolower("{$scheme}{$host}");
-        } else {
-            $normalizedUrl = '';
-        }
+        $parsedUrl = parse_url($rawUrl['name']);
+        $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+        $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+        $normalizedUrl = mb_strtolower("{$scheme}{$host}");
 
         return ['name' => $normalizedUrl];
     }
