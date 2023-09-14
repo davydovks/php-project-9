@@ -15,8 +15,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use PageAnalyzer\Parser;
 use Repository\DBRepository;
+use Valitron\Validator;
 
-use function Validator\createNameValidator;
 use function Validator\translateNameValidationErrors;
 
 session_start();
@@ -79,7 +79,11 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
 
 $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
-    $validator = createNameValidator($enteredUrl);
+
+    $validator = new Validator($enteredUrl);
+    $validator->rule('required', 'name');
+    $validator->rule('url', 'name');
+    $validator->rule('lengthMax', 'name', 255);
 
     if (!$validator->validate()) {
         $errors = $validator->errors();

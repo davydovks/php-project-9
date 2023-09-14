@@ -2,18 +2,6 @@
 
 namespace Validator;
 
-use Valitron\Validator;
-
-function createNameValidator(array $normalizedUrl): Validator
-{
-    $validator = new Validator($normalizedUrl);
-    $validator->rule('required', 'name');
-    $validator->rule('url', 'name');
-    $validator->rule('lengthMax', 'name', 255);
-
-    return $validator;
-}
-
 function translateNameValidationErrors(array|bool $errors)
 {
     if (!isset($errors['name'])) {
