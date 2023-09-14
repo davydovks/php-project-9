@@ -8,6 +8,11 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
 use PageAnalyzer\Parser;
 use Repository\DBRepository;
 
@@ -125,31 +130,32 @@ $app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args)
             ->withStatus(500);
     }
 
-    $check = Parser::getUrlData($url);
-
-    if (!isset($check['status_code'])) {
-        $message = 'Произошла ошибка при проверке, не удалось подключиться';
-        $this->get('flash')->addMessage('danger', $message);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
-    }
-
-    if ($check['status_code'] == 200) {
+    $client = new Client();
+    try {
+        $urlResponse = $client->get($url['name']);
+        $check = Parser::parseResponse($urlResponse);
+        $check['url_id'] = $url['id'];
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
         $repoChecks->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    } catch (ClientException $e) {
+        $urlResponse = $e->getResponse();
+        $check = Parser::parseResponse($urlResponse);
+        $check['url_id'] = $url['id'];
+        $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
+        $this->get('flash')->addMessage('warning', $message);
+        $repoChecks->save($check);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    } catch (ConnectException | ServerException) {
+        $message = 'Произошла ошибка при проверке, не удалось подключиться';
+        $this->get('flash')->addMessage('danger', $message);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+    } catch (RequestException) {
+        $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
+        $this->get('flash')->addMessage('warning', $message);
+        return $this->get('view')->render($response, 'errors/500.twig')->withStatus(500);
     }
-
-    $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
-    $this->get('flash')->addMessage('warning', $message);
-
-    if (!isset($check['url_id'])) {
-        return $this->get('view')->render($response, 'errors/500.twig')
-            ->withStatus(500);
-    }
-
-    $repoChecks->save($check);
-    return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
 })->setName('urls.checks.store');
 
 $app->run();
