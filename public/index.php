@@ -152,17 +152,4 @@ $app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args)
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
 })->setName('urls.checks.store');
 
-$app->get('/assets/{filename}', function ($request, $response, $args) {
-    $filename = $args['filename'];
-    $path = __DIR__ . "/assets/{$filename}";
-    $image = file_get_contents($path);
-    if ($image === false) {
-        $handler = $this->notFoundHandler;
-        return $handler($request, $response);
-    }
-
-    $response->write($image);
-    return $response->withHeader('Content-Type', 'image/svg+xml');
-});
-
 $app->run();
