@@ -122,7 +122,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsR
 })->setName('urls.show');
 
 $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use ($urlsRepo, $checksRepo, $router) {
-    $urlId = (int) $args['urlId'];
+    $urlId = $args['urlId'];
     $url = $urlsRepo->findOneById($urlId);
 
     if (empty($url)) {
