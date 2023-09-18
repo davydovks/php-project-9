@@ -18,7 +18,7 @@
                 </tr>
                 <tr>
                     <td>Дата создания</td>
-                    <td>{{ url.created_at }}</td>
+                    <td>{{ url.createdAt }}</td>
                 </tr>
             </tbody>
         </table>
@@ -38,16 +38,14 @@
                 <th>Дата создания</th>
             </tr>
             {% for check in checks %}
-                {% if check.url_id == url.id %}
-                    <tr>
-                        <td>{{ check.id }}</td>
-                        <td>{{ check.status_code }}</td>
-                        <td class="text-break">{{ check.h1 }}</td>
-                        <td class="text-break">{{ check.title }}</td>
-                        <td class="text-break">{{ check.description }}</td>
-                        <td>{{ check.created_at }}</td>
-                    </tr>
-                {% endif %}
+                <tr>
+                    <td>{{ check.id }}</td>
+                    <td>{{ check.statusCode }}</td>
+                    <td class="text-break">{{ check.h1 }}</td>
+                    <td class="text-break">{{ check.title }}</td>
+                    <td class="text-break">{{ check.description }}</td>
+                    <td>{{ check.createdAt }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
