@@ -8,10 +8,10 @@
         "files": [
             "src/Parser.php",
             "src/Connection.php",
-            "src/Url.php",
-            "src/UrlCheck.php",
-            "src/UrlsRepository.php",
-            "src/UrlChecksRepository.php"
+            "src/Entity/Url.php",
+            "src/Entity/UrlCheck.php",
+            "src/Repository/UrlsRepository.php",
+            "src/Repository/UrlChecksRepository.php"
         ]
     },
     "authors": [
