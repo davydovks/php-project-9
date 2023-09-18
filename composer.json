@@ -7,9 +7,11 @@
         },
         "files": [
             "src/Parser.php",
-            "src/Repository.php",
-            "src/DBRepository.php",
-            "src/Connection.php"
+            "src/Connection.php",
+            "src/Url.php",
+            "src/UrlCheck.php",
+            "src/UrlsRepository.php",
+            "src/UrlChecksRepository.php"
         ]
     },
     "authors": [
