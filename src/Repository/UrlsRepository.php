@@ -63,7 +63,7 @@ class UrlsRepository
         }
     }
 
-    public function save(Url $url): int
+    public function save(Url $url): string
     {
         $sql = "INSERT INTO urls (name, created_at) VALUES (?, ?) RETURNING id";
         try {
@@ -75,6 +75,7 @@ class UrlsRepository
             return $id;
         } catch (\PDOException $e) {
             echo $e->getMessage();
+            return '';
         }
     }
 }

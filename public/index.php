@@ -21,7 +21,7 @@ use Valitron\Validator;
 session_start();
 
 $urlsRepo = new UrlsRepository();
-$urlChecksRepo = new UrlChecksRepository();
+$checksRepo = new UrlChecksRepository();
 
 $container = new Container();
 
@@ -59,10 +59,10 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
-$app->get('/urls', function ($request, $response) use ($urlsRepo, $urlChecksRepo) {
+$app->get('/urls', function ($request, $response) use ($urlsRepo, $checksRepo) {
     $urls = $urlsRepo->all();
-    $urlsEnriched = array_map(function (Url $url) use ($urlChecksRepo) {
-        $check = $urlChecksRepo->findLastByUrlId($url->getId());
+    $urlsEnriched = array_map(function (Url $url) use ($checksRepo) {
+        $check = $checksRepo->findLastByUrlId($url->getId());
         if (!empty($check)) {
             $url->setLastCheckStatus($check->getStatusCode());
             $url->setLastCheckedAt($check->getCreatedAt());
@@ -105,7 +105,7 @@ $app->post('/urls', function ($request, $response) use ($urlsRepo, $router) {
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdId]), 302);
 })->setName('urls.store');
 
-$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsRepo, $urlChecksRepo) {
+$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsRepo, $checksRepo) {
     $url = $urlsRepo->findOneById($args['id']);
 
     if (empty($url)) {
@@ -113,7 +113,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsR
             ->withStatus(404);
     }
 
-    $checks = $urlChecksRepo->findAllByUrlId($url->getId());
+    $checks = $checksRepo->findAllByUrlId($url->getId());
 
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
@@ -121,8 +121,8 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsR
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($urlsRepo, $urlChecksRepo, $router) {
-    $urlId = $args['url_id'];
+$app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use ($urlsRepo, $checksRepo, $router) {
+    $urlId = (int) $args['urlId'];
     $url = $urlsRepo->findOneById($urlId);
 
     if (empty($url)) {
@@ -137,7 +137,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         $check->setUrlId($urlId);
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
-        $urlChecksRepo->save($check);
+        $checksRepo->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ClientException $e) {
         $urlResponse = $e->getResponse();
@@ -145,7 +145,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         $check->setUrlId($urlId);
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
-        $urlChecksRepo->save($check);
+        $checksRepo->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ConnectException | ServerException) {
         $message = 'Произошла ошибка при проверке, не удалось подключиться';

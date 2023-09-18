@@ -60,7 +60,7 @@ class UrlCheck
         return $this->createdAt;
     }
 
-    public function setUrlId(string $urlId)
+    public function setUrlId(int $urlId)
     {
         $this->urlId = $urlId;
     }

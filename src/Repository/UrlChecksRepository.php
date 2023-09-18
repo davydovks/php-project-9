@@ -50,7 +50,7 @@ class UrlChecksRepository
         }
     }
 
-    public function save(UrlCheck $urlCheck): int
+    public function save(UrlCheck $urlCheck): void
     {
         $columns = "url_id, status_code, h1, title, description, created_at";
         $values = "?, ?, ?, ?, ?, ?";
@@ -64,8 +64,6 @@ class UrlChecksRepository
             $stmt->bindValue(5, $urlCheck->getDescription());
             $stmt->bindValue(6, $urlCheck->getCreatedAt());
             $stmt->execute();
-            [$id] = $stmt->fetch(\PDO::FETCH_NUM);
-            return $id;
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
