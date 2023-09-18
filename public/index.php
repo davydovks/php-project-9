@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use App\Entity\Url;
 use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
+use App\Parser;
 use DI\Container;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
@@ -15,7 +16,6 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
-use PageAnalyzer\Parser;
 use Valitron\Validator;
 
 session_start();

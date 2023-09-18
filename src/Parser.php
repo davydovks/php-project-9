@@ -1,6 +1,6 @@
 <?php
 
-namespace PageAnalyzer;
+namespace App;
 
 use App\Entity\Url;
 use App\Entity\UrlCheck;
