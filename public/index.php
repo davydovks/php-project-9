@@ -2,25 +2,26 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Entity\Url;
+use App\Repository\UrlChecksRepository;
+use App\Repository\UrlsRepository;
 use DI\Container;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use PageAnalyzer\Parser;
-use Repository\DBRepository;
 use Valitron\Validator;
 
 session_start();
 
-$repoUrls = new DBRepository('urls');
-$repoChecks = new DBRepository('url_checks');
+$urlsRepo = new UrlsRepository();
+$urlChecksRepo = new UrlChecksRepository();
 
 $container = new Container();
 
@@ -58,13 +59,13 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
-$app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
-    $urls = $repoUrls->all();
-    $urlsEnriched = array_map(function ($url) use ($repoChecks) {
-        $check = $repoChecks->findLast('url_id', $url['id']);
+$app->get('/urls', function ($request, $response) use ($urlsRepo, $urlChecksRepo) {
+    $urls = $urlsRepo->all();
+    $urlsEnriched = array_map(function (Url $url) use ($urlChecksRepo) {
+        $check = $urlChecksRepo->findLastByUrlId($url->getId());
         if (!empty($check)) {
-            $url['lastCheckAt'] = $check['created_at'];
-            $url['lastCheckStatus'] = $check['status_code'];
+            $url->setLastCheckStatus($check->getStatusCode());
+            $url->setLastCheckedAt($check->getCreatedAt());
         }
 
         return $url;
@@ -75,7 +76,7 @@ $app->get('/urls', function ($request, $response) use ($repoUrls, $repoChecks) {
     ]);
 })->setName('urls.index');
 
-$app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
+$app->post('/urls', function ($request, $response) use ($urlsRepo, $router) {
     $enteredUrl = $request->getParsedBodyParam('url');
 
     $validator = new Validator($enteredUrl);
@@ -92,29 +93,27 @@ $app->post('/urls', function ($request, $response) use ($repoUrls, $router) {
 
     $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
-    $existingUrl = $repoUrls->find('name', $normalizedUrl['name']);
+    $existingUrl = $urlsRepo->findOneByName($normalizedUrl->getName());
     if (!empty($existingUrl)) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl['id']]), 302);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
     }
 
-    $normalizedUrl['created_at'] = Carbon::now()->toDateTimeString();
-    $repoUrls->save($normalizedUrl);
-    $createdUrl = $repoUrls->find('name', $normalizedUrl['name']);
+    $createdId = $urlsRepo->save($normalizedUrl);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
-    return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdUrl['id']]), 302);
+    return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdId]), 302);
 })->setName('urls.store');
 
-$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($repoUrls, $repoChecks) {
-    $url = $repoUrls->find('id', $args['id']);
+$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsRepo, $urlChecksRepo) {
+    $url = $urlsRepo->findOneById($args['id']);
 
     if (empty($url)) {
         return $this->get('view')->render($response, 'errors/404.twig')
             ->withStatus(404);
     }
 
-    $checks = $repoChecks->all();
+    $checks = $urlChecksRepo->findAllByUrlId($url->getId());
 
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
@@ -122,8 +121,9 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($repoU
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args) use ($repoUrls, $repoChecks, $router) {
-    $url = $repoUrls->find('id', $args['url_id']);
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($urlsRepo, $urlChecksRepo, $router) {
+    $urlId = $args['url_id'];
+    $url = $urlsRepo->findOneById($urlId);
 
     if (empty($url)) {
         return $this->get('view')->render($response, 'errors/500.twig')
@@ -132,25 +132,25 @@ $app->post('/urls/{url_id:[0-9]+}/checks', function ($request, $response, $args)
 
     $client = new Client();
     try {
-        $urlResponse = $client->get($url['name']);
+        $urlResponse = $client->get($url->getName());
         $check = Parser::parseResponse($urlResponse);
-        $check['url_id'] = $url['id'];
+        $check->setUrlId($urlId);
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
-        $repoChecks->save($check);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+        $urlChecksRepo->save($check);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ClientException $e) {
         $urlResponse = $e->getResponse();
         $check = Parser::parseResponse($urlResponse);
-        $check['url_id'] = $url['id'];
+        $check->setUrlId($urlId);
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
-        $repoChecks->save($check);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+        $urlChecksRepo->save($check);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ConnectException | ServerException) {
         $message = 'Произошла ошибка при проверке, не удалось подключиться';
         $this->get('flash')->addMessage('danger', $message);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $url['id']]), 302);
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (RequestException) {
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
