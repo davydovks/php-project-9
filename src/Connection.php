@@ -1,6 +1,6 @@
 <?php
 
-namespace Database;
+namespace App;
 
 use Dotenv\Dotenv;
 

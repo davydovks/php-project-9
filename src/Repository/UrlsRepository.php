@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Url;
-use Database\Connection;
+use App\Connection;
 
 class UrlsRepository
 {

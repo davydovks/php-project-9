@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\UrlCheck;
-use Database\Connection;
+use App\Connection;
 
 class UrlChecksRepository
 {
