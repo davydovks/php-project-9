@@ -2,6 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Connection;
 use App\Entity\Url;
 use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
@@ -27,8 +28,10 @@ if (file_exists($envPath . '.env')) {
     $dotenv->load();
 }
 
-$urlsRepo = new UrlsRepository();
-$checksRepo = new UrlChecksRepository();
+$pdo = Connection::get();
+
+$urlsRepo = new UrlsRepository($pdo);
+$checksRepo = new UrlChecksRepository($pdo);
 
 $container = new Container();
 

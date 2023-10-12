@@ -9,10 +9,10 @@ class UrlChecksRepository
 {
     private \PDO $pdo;
 
-    public function __construct()
+    public function __construct(Connection $pdo)
     {
         try {
-            $this->pdo = Connection::get()->connect();
+            $this->pdo = $pdo->connect();
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
