@@ -7,18 +7,25 @@ use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
 use App\Parser;
 use DI\Container;
-use Slim\Factory\AppFactory;
-use Slim\Views\Twig;
-use Slim\Views\TwigMiddleware;
-use Slim\Middleware\MethodOverrideMiddleware;
+use Dotenv\Dotenv;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Slim\Factory\AppFactory;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
+use Slim\Middleware\MethodOverrideMiddleware;
 use Valitron\Validator;
 
 session_start();
+
+$envPath = __DIR__ . '/../';
+if (file_exists($envPath . '.env')) {
+    $dotenv = Dotenv::createImmutable($envPath);
+    $dotenv->load();
+}
 
 $urlsRepo = new UrlsRepository();
 $checksRepo = new UrlChecksRepository();
