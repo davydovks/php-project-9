@@ -29,8 +29,8 @@ if (file_exists($envPath . '.env')) {
 
 $container = new Container();
 
-$urlsRepo = $container->get(UrlsRepository::class);
-$checksRepo = $container->get(UrlChecksRepository::class);
+$container->set('urlsRepo', $container->get(UrlsRepository::class));
+$container->set('checksRepo', $container->get(UrlChecksRepository::class));
 
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
@@ -66,10 +66,10 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
 })->setName('home');
 
-$app->get('/urls', function ($request, $response) use ($urlsRepo, $checksRepo) {
-    $urls = $urlsRepo->all();
-    $urlsEnriched = array_map(function (Url $url) use ($checksRepo) {
-        $check = $checksRepo->findLastByUrlId($url->getId());
+$app->get('/urls', function ($request, $response) {
+    $urls = $this->get('urlsRepo')->all();
+    $urlsEnriched = array_map(function (Url $url) {
+        $check = $this->get('checksRepo')->findLastByUrlId($url->getId());
         if (!empty($check)) {
             $url->setLastCheckStatus($check->getStatusCode());
             $url->setLastCheckedAt($check->getCreatedAt());
@@ -83,7 +83,7 @@ $app->get('/urls', function ($request, $response) use ($urlsRepo, $checksRepo) {
     ]);
 })->setName('urls.index');
 
-$app->post('/urls', function ($request, $response) use ($urlsRepo, $router) {
+$app->post('/urls', function ($request, $response) use ($router) {
     $enteredUrl = $request->getParsedBodyParam('url');
 
     $validator = new Validator($enteredUrl);
@@ -100,27 +100,27 @@ $app->post('/urls', function ($request, $response) use ($urlsRepo, $router) {
 
     $normalizedUrl = Parser::normalizeUrl($enteredUrl);
 
-    $existingUrl = $urlsRepo->findOneByName($normalizedUrl->getName());
+    $existingUrl = $this->get('urlsRepo')->findOneByName($normalizedUrl->getName());
     if (!empty($existingUrl)) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
     }
 
-    $createdId = $urlsRepo->save($normalizedUrl);
+    $createdId = $this->get('urlsRepo')->save($normalizedUrl);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdId]), 302);
 })->setName('urls.store');
 
-$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsRepo, $checksRepo) {
-    $url = $urlsRepo->findOneById($args['id']);
+$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) {
+    $url = $this->get('urlsRepo')->findOneById($args['id']);
 
     if (empty($url)) {
         return $this->get('view')->render($response, 'errors/404.twig')
             ->withStatus(404);
     }
 
-    $checks = $checksRepo->findAllByUrlId($url->getId());
+    $checks = $this->get('checksRepo')->findAllByUrlId($url->getId());
 
     return $this->get('view')->render($response, 'urls/show.twig', [
         'url' => $url,
@@ -128,9 +128,9 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($urlsR
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use ($urlsRepo, $checksRepo, $router) {
+$app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use ($router) {
     $urlId = $args['urlId'];
-    $url = $urlsRepo->findOneById($urlId);
+    $url = $this->get('urlsRepo')->findOneById($urlId);
 
     if (empty($url)) {
         return $this->get('view')->render($response, 'errors/500.twig')
@@ -144,7 +144,7 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use
         $check->setUrlId($urlId);
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
-        $checksRepo->save($check);
+        $this->get('checksRepo')->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ClientException $e) {
         $urlResponse = $e->getResponse();
@@ -152,7 +152,7 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use
         $check->setUrlId($urlId);
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
-        $checksRepo->save($check);
+        $this->get('checksRepo')->save($check);
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ConnectException | ServerException) {
         $message = 'Произошла ошибка при проверке, не удалось подключиться';
