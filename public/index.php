@@ -2,7 +2,6 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Connection;
 use App\Entity\Url;
 use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
@@ -30,10 +29,8 @@ if (file_exists($envPath . '.env')) {
 
 $container = new Container();
 
-$container->set('pdo', new Connection());
-
-$urlsRepo = new UrlsRepository($container->get('pdo'));
-$checksRepo = new UrlChecksRepository($container->get('pdo'));
+$urlsRepo = $container->get(UrlsRepository::class);
+$checksRepo = $container->get(UrlChecksRepository::class);
 
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
