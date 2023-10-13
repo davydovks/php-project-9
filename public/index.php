@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Slim\Factory\AppFactory;
+use Slim\Flash\Messages;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Middleware\MethodOverrideMiddleware;
@@ -33,7 +34,7 @@ $container->set('urlsRepo', $container->get(UrlsRepository::class));
 $container->set('checksRepo', $container->get(UrlChecksRepository::class));
 
 $container->set('flash', function () {
-    return new \Slim\Flash\Messages();
+    return new Messages();
 });
 
 $container->set('view', function () use ($container) {
