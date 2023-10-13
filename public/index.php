@@ -33,9 +33,7 @@ $container = new Container();
 $container->set('urlsRepo', $container->get(UrlsRepository::class));
 $container->set('checksRepo', $container->get(UrlChecksRepository::class));
 
-$container->set('flash', function () {
-    return new Messages();
-});
+$container->set('flash', new Messages());
 
 $container->set('view', function () use ($container) {
     $view = Twig::create(__DIR__ . '/../templates');
