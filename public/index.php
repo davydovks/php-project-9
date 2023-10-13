@@ -61,7 +61,7 @@ $customErrorHandler = function ($request, $exception) use ($app) {
 
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
-$router = $app->getRouteCollector()->getRouteParser();
+$container->set('router', $app->getRouteCollector()->getRouteParser());
 
 $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig');
@@ -84,7 +84,7 @@ $app->get('/urls', function ($request, $response) {
     ]);
 })->setName('urls.index');
 
-$app->post('/urls', function ($request, $response) use ($router) {
+$app->post('/urls', function ($request, $response) {
     $enteredUrl = $request->getParsedBodyParam('url');
 
     $validator = new Validator($enteredUrl);
@@ -104,13 +104,14 @@ $app->post('/urls', function ($request, $response) use ($router) {
     $existingUrl = $this->get('urlsRepo')->findOneByName($normalizedUrl->getName());
     if (!empty($existingUrl)) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
+        return $response
+            ->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
     }
 
     $createdId = $this->get('urlsRepo')->save($normalizedUrl);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
-    return $response->withRedirect($router->urlFor('urls.show', ['id' => $createdId]), 302);
+    return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $createdId]), 302);
 })->setName('urls.store');
 
 $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) {
@@ -129,7 +130,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) {
     ]);
 })->setName('urls.show');
 
-$app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use ($router) {
+$app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) {
     $urlId = $args['urlId'];
     $url = $this->get('urlsRepo')->findOneById($urlId);
 
@@ -146,7 +147,7 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use
         $message = 'Страница успешно проверена';
         $this->get('flash')->addMessage('success', $message);
         $this->get('checksRepo')->save($check);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
+        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ClientException $e) {
         $urlResponse = $e->getResponse();
         $check = Parser::parseResponse($urlResponse);
@@ -154,11 +155,11 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) use
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
         $this->get('checksRepo')->save($check);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
+        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ConnectException | ServerException) {
         $message = 'Произошла ошибка при проверке, не удалось подключиться';
         $this->get('flash')->addMessage('danger', $message);
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]), 302);
+        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (RequestException) {
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
