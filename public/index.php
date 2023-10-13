@@ -143,26 +143,26 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) {
         $check = Parser::parseResponse($urlResponse);
         $check->setUrlId($urlId);
         $message = 'Страница успешно проверена';
-        $this->get('flash')->addMessage('success', $message);
+        $messageType = 'success';
         $this->get('checksRepo')->save($check);
-        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ClientException $e) {
         $urlResponse = $e->getResponse();
         $check = Parser::parseResponse($urlResponse);
         $check->setUrlId($urlId);
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
-        $this->get('flash')->addMessage('warning', $message);
+        $messageType = 'warning';
         $this->get('checksRepo')->save($check);
-        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
     } catch (ConnectException | ServerException) {
         $message = 'Произошла ошибка при проверке, не удалось подключиться';
-        $this->get('flash')->addMessage('danger', $message);
-        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
+        $messageType = 'danger';
     } catch (RequestException) {
         $message = 'Проверка была выполнена успешно, но сервер ответил с ошибкой';
         $this->get('flash')->addMessage('warning', $message);
         return $this->get('view')->render($response, 'errors/500.twig')->withStatus(500);
     }
+    
+    $this->get('flash')->addMessage($messageType, $message);
+    return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
 })->setName('urls.checks.store');
 
 $app->run();
