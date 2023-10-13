@@ -160,7 +160,7 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) {
         $this->get('flash')->addMessage('warning', $message);
         return $this->get('view')->render($response, 'errors/500.twig')->withStatus(500);
     }
-    
+
     $this->get('flash')->addMessage($messageType, $message);
     return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $urlId]), 302);
 })->setName('urls.checks.store');
