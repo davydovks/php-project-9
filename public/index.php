@@ -28,12 +28,12 @@ if (file_exists($envPath . '.env')) {
     $dotenv->load();
 }
 
-$pdo = Connection::get();
-
-$urlsRepo = new UrlsRepository($pdo);
-$checksRepo = new UrlChecksRepository($pdo);
-
 $container = new Container();
+
+$container->set('pdo', Connection::get());
+
+$urlsRepo = new UrlsRepository($container->get('pdo'));
+$checksRepo = new UrlChecksRepository($container->get('pdo'));
 
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
