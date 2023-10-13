@@ -3,7 +3,7 @@
 namespace App;
 
 /**
- * Класс для подключения к БД PostgreSQL по данным из DATABASE_URL 
+ * Класс для подключения к БД PostgreSQL по данным из DATABASE_URL
  */
 final class Connection
 {
