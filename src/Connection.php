@@ -17,11 +17,11 @@ final class Connection
         $databaseUrl = parse_url($_ENV['DATABASE_URL']);
         $conStr = sprintf(
             "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
-            $databaseUrl['host'],
-            $databaseUrl['port'],
-            ltrim($databaseUrl['path'], '/'),
-            $databaseUrl['user'],
-            $databaseUrl['pass']
+            $databaseUrl['host'] ?? '',
+            $databaseUrl['port'] ?? '',
+            ltrim($databaseUrl['path'] ?? '', '/'),
+            $databaseUrl['user'] ?? '',
+            $databaseUrl['pass'] ?? ''
         );
 
         $pdo = new \PDO($conStr);
