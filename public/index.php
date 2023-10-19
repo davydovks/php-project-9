@@ -108,10 +108,10 @@ $app->post('/urls', function ($request, $response) {
             ->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
     }
 
-    $createdId = $this->get('urlsRepo')->save($url);
+    $createdUrlId = $this->get('urlsRepo')->save($url);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
-    return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $createdId]), 302);
+    return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $createdUrlId]), 302);
 })->setName('urls.store');
 
 $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) {
