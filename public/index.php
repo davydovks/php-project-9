@@ -3,6 +3,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Entity\Url;
+use App\Entity\UrlCheck;
 use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
 use App\Parser;
@@ -156,7 +157,8 @@ $app->post('/urls/{urlId:\d+}/checks', function ($request, $response, $args) {
         return $this->get('view')->render($response, 'errors/500.twig')->withStatus(500);
     }
 
-    $check = Parser::parseResponse($urlResponse);
+    $checkData = Parser::parseResponse($urlResponse);
+    $check = new UrlCheck($checkData);
     $check->setUrlId($urlId);
     $this->get('checksRepo')->save($check);
 
