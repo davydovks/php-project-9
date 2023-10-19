@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Entity\Url;
-use App\Entity\UrlCheck;
 use DiDom\Document;
 use Psr\Http\Message\ResponseInterface;
 
