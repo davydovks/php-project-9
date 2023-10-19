@@ -99,15 +99,16 @@ $app->post('/urls', function ($request, $response) {
     }
 
     $normalizedUrl = Parser::normalizeUrl($enteredUrl);
+    $url = new Url(['name' => $normalizedUrl]);
 
-    $existingUrl = $this->get('urlsRepo')->findOneByName($normalizedUrl->getName());
+    $existingUrl = $this->get('urlsRepo')->findOneByName($url->getName());
     if (!empty($existingUrl)) {
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response
             ->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $existingUrl->getId()]), 302);
     }
 
-    $createdId = $this->get('urlsRepo')->save($normalizedUrl);
+    $createdId = $this->get('urlsRepo')->save($url);
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
     return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => $createdId]), 302);
