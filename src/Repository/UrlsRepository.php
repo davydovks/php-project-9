@@ -36,9 +36,10 @@ class UrlsRepository
 
     public function findOneById(int $id): ?Url
     {
-        $sql = "SELECT * FROM urls WHERE id = '{$id}'";
+        $sql = "SELECT * FROM urls WHERE id = ?";
         try {
             $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(1, $id);
             $stmt->execute();
             $url = $stmt->fetch(\PDO::FETCH_ASSOC);
             return is_array($url) ? new Url($url) : null;
