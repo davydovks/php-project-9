@@ -68,18 +68,17 @@ $app->get('/', function ($request, $response) {
 
 $app->get('/urls', function ($request, $response) {
     $urls = $this->get('urlsRepo')->all();
-    $urlsEnriched = array_map(function (Url $url) {
-        $check = $this->get('checksRepo')->findLastByUrlId($url->getId());
-        if (!empty($check)) {
-            $url->setLastCheckStatus($check->getStatusCode());
-            $url->setLastCheckedAt($check->getCreatedAt());
-        }
-
-        return $url;
-    }, $urls);
+    $checksByUrlId = collect($urls)
+        ->mapWithKeys(function ($url) {
+            return [
+                $url->getId() => $this->get('checksRepo')->findLastByUrlId($url->getId())
+            ];
+        })
+        ->toArray();
 
     return $this->get('view')->render($response, 'urls/index.twig', [
-        'urls' => $urlsEnriched
+        'urls' => $urls,
+        'checks' => $checksByUrlId
     ]);
 })->setName('urls.index');
 
