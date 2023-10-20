@@ -67,6 +67,7 @@ $app->get('/', function ($request, $response) {
 })->setName('home');
 
 $app->get('/urls', function ($request, $response) {
+    /** @var array<Url> $urls */
     $urls = $this->get('urlsRepo')->all();
     $checksByUrlId = collect($urls)
         ->mapWithKeys(function ($url) {
