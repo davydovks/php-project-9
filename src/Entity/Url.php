@@ -9,8 +9,6 @@ class Url
     private ?int $id;
     private string $name;
     private string $createdAt;
-    private ?int $lastCheckStatus;
-    private ?string $lastCheckedAt;
 
     public function __construct(array $url)
     {
@@ -34,16 +32,6 @@ class Url
         return $this->createdAt;
     }
 
-    public function getLastCheckStatus()
-    {
-        return $this->lastCheckStatus ?? null;
-    }
-
-    public function getLastCheckedAt()
-    {
-        return $this->lastCheckedAt ?? null;
-    }
-
     public function setName(string $name)
     {
         $this->name = $name;
@@ -52,15 +40,5 @@ class Url
     public function setCreatedAt(?string $timestamp = null)
     {
         $this->createdAt = $timestamp ? $timestamp : Carbon::now()->toDateTimeString();
-    }
-
-    public function setLastCheckStatus(int $status)
-    {
-        $this->lastCheckStatus = $status;
-    }
-
-    public function setLastCheckedAt(string $timestamp)
-    {
-        $this->lastCheckedAt = $timestamp;
     }
 }
