@@ -24,10 +24,10 @@ class UrlsRepository
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
-            $checks = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $urls = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return array_map(function ($url) {
                 return new Url($url);
-            }, $checks);
+            }, $urls);
         } catch (\PDOException $e) {
             echo $e->getMessage();
             return [];
