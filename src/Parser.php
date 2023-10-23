@@ -3,6 +3,7 @@
 namespace App;
 
 use DiDom\Document;
+use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 
 class Parser
@@ -27,8 +28,8 @@ class Parser
     public static function normalizeUrl(array $rawUrl): string
     {
         $parsedUrl = parse_url($rawUrl['name']);
-        $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-        $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+        $scheme = Arr::exists($parsedUrl, 'scheme') ? $parsedUrl['scheme'] . '://' : '';
+        $host = Arr::exists($parsedUrl, 'host') ? $parsedUrl['host'] : '';
         $normalizedUrl = mb_strtolower("{$scheme}{$host}");
 
         return $normalizedUrl;
