@@ -41,9 +41,9 @@
                 <tr>
                     <td>{{ check.id }}</td>
                     <td>{{ check.statusCode }}</td>
-                    <td class="text-break">{{ check.h1 }}</td>
-                    <td class="text-break">{{ check.title }}</td>
-                    <td class="text-break">{{ check.description }}</td>
+                    <td class="text-break">{{ check.h1|slice(0, 255) }}</td>
+                    <td class="text-break">{{ check.title|slice(0, 255) }}</td>
+                    <td class="text-break">{{ check.description|slice(0, 255) }}</td>
                     <td>{{ check.createdAt }}</td>
                 </tr>
             {% endfor %}
