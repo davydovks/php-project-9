@@ -67,10 +67,15 @@ $app->get('/', function ($request, $response) {
 })->setName('home');
 
 $app->get('/urls', function ($request, $response) {
-    $urls = collect($this->get('urlsRepo')->all());
-    $checks = collect($this->get('checksRepo')->all());
-    $checksByUrlId = $urls->mapWithKeys(function ($url) use ($checks) {
-        $lastCheck = $checks->first(fn($check) => $check->getUrlId() == $url->getId());
+    /** @var array<Url> $urls */
+    $urls = $this->get('urlsRepo')->all();
+
+    /** @var array<UrlCheck> $checks */
+    $checks = $this->get('checksRepo')->all();
+
+    $checksByUrlId = collect($urls)->mapWithKeys(function ($url) use ($checks) {
+        $lastCheck = collect($checks)
+            ->first(fn($check) => $check->getUrlId() == $url->getId());
         return [$url->getId() => $lastCheck];
     })->toArray();
 
