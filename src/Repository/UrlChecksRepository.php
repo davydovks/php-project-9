@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\UrlCheck;
+use App\Models\UrlCheck;
 use App\Connection;
 
 class UrlChecksRepository

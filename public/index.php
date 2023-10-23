@@ -2,8 +2,8 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Entity\Url;
-use App\Entity\UrlCheck;
+use App\Models\Url;
+use App\Models\UrlCheck;
 use App\Repository\UrlChecksRepository;
 use App\Repository\UrlsRepository;
 use App\Parser;

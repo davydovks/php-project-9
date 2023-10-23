@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Url;
+use App\Models\Url;
 use App\Connection;
 
 class UrlsRepository

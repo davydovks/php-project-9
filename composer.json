@@ -8,8 +8,8 @@
         "files": [
             "src/Parser.php",
             "src/Connection.php",
-            "src/Entity/Url.php",
-            "src/Entity/UrlCheck.php",
+            "src/Models/Url.php",
+            "src/Models/UrlCheck.php",
             "src/Repository/UrlsRepository.php",
             "src/Repository/UrlChecksRepository.php"
         ]
