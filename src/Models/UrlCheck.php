@@ -22,7 +22,9 @@ class UrlCheck
         $this->h1 = $check['h1'];
         $this->title = $check['title'];
         $this->description = $check['description'];
-        $this->createdAt = new Carbon($check['created_at']);
+        $this->createdAt = isset($check['created_at'])
+            ? new Carbon($check['created_at'])
+            : Carbon::now();
     }
 
     public function getId()
