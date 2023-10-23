@@ -14,7 +14,7 @@ class Url
     {
         $this->id = $url['id'] ?? null;
         $this->name = $url['name'];
-        $this->createdAt = isset($url['created_at']) 
+        $this->createdAt = isset($url['created_at'])
             ? new Carbon($url['created_at'])
             : Carbon::now();
     }
