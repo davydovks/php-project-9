@@ -16,9 +16,9 @@ class Parser
 
         $checkData = [
             'status_code' => $urlResponse->getStatusCode(),
-            'h1' => $h1,
-            'title' => $title,
-            'description' => $description
+            'h1' => strip_tags($h1),
+            'title' => strip_tags($title),
+            'description' => strip_tags($description)
         ];
 
         return $checkData;
