@@ -18,6 +18,22 @@ class UrlChecksRepository
         }
     }
 
+    public function all()
+    {
+        $sql = "SELECT * FROM url_checks ORDER BY id DESC";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $checks = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return array_map(function ($check) {
+                return new UrlCheck($check);
+            }, $checks);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+            return [];
+        }
+    }
+
     public function findAllByUrlId(int $urlId)
     {
         $sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
