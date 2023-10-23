@@ -25,8 +25,13 @@ class Parser
     public static function normalizeUrl(array $rawUrl): string
     {
         $parsedUrl = parse_url($rawUrl['name']);
-        $scheme = Arr::exists($parsedUrl, 'scheme') ? $parsedUrl['scheme'] . '://' : '';
-        $host = Arr::exists($parsedUrl, 'host') ? $parsedUrl['host'] : '';
-        return mb_strtolower("{$scheme}{$host}");
+        $scheme = Arr::get($parsedUrl, 'scheme', '');
+        $host = Arr::get($parsedUrl, 'host', '');
+
+        if (strlen($scheme) == 0) {
+            return mb_strtolower($host);
+        }
+
+        return mb_strtolower("{$scheme}://{$host}");
     }
 }
