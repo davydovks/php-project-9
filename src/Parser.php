@@ -14,15 +14,12 @@ class Parser
         $h1 = optional($document->first('h1'))->innerHtml() ?? '';
         $title = optional($document->first('title'))->innerHtml() ?? '';
         $description = optional($document->first('meta[name=description]'))->content ?? '';
-
-        $checkData = [
+        return [
             'status_code' => $urlResponse->getStatusCode(),
             'h1' => strip_tags($h1),
             'title' => strip_tags($title),
             'description' => strip_tags($description)
         ];
-
-        return $checkData;
     }
 
     public static function normalizeUrl(array $rawUrl): string
@@ -30,8 +27,6 @@ class Parser
         $parsedUrl = parse_url($rawUrl['name']);
         $scheme = Arr::exists($parsedUrl, 'scheme') ? $parsedUrl['scheme'] . '://' : '';
         $host = Arr::exists($parsedUrl, 'host') ? $parsedUrl['host'] : '';
-        $normalizedUrl = mb_strtolower("{$scheme}{$host}");
-
-        return $normalizedUrl;
+        return mb_strtolower("{$scheme}{$host}");
     }
 }
