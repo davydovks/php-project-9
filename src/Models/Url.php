@@ -38,9 +38,4 @@ class Url
     {
         $this->name = $name;
     }
-
-    public function setCreatedAt(?string $timestamp = null)
-    {
-        $this->createdAt = $timestamp ?? Carbon::now();
-    }
 }
