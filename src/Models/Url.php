@@ -8,13 +8,13 @@ class Url
 {
     private ?int $id;
     private string $name;
-    private string $createdAt;
+    private Carbon $createdAt;
 
     public function __construct(array $url)
     {
         $this->id = $url['id'] ?? null;
         $this->name = $url['name'];
-        $this->createdAt = $url['created_at'] ?? Carbon::now()->toDateTimeString();
+        $this->createdAt = new Carbon($url['created_at']);
     }
 
     public function getId()
@@ -39,6 +39,6 @@ class Url
 
     public function setCreatedAt(?string $timestamp = null)
     {
-        $this->createdAt = $timestamp ? $timestamp : Carbon::now()->toDateTimeString();
+        $this->createdAt = $timestamp ?? Carbon::now();
     }
 }

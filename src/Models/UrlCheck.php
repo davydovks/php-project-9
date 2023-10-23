@@ -12,7 +12,7 @@ class UrlCheck
     private string $h1;
     private string $title;
     private string $description;
-    private string $createdAt;
+    private Carbon $createdAt;
 
     public function __construct(array $check)
     {
@@ -22,7 +22,7 @@ class UrlCheck
         $this->h1 = $check['h1'];
         $this->title = $check['title'];
         $this->description = $check['description'];
-        $this->createdAt = $check['created_at'] ?? Carbon::now()->toDateTimeString();
+        $this->createdAt = new Carbon($check['created_at']);
     }
 
     public function getId()
