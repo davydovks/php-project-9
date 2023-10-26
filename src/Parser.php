@@ -16,7 +16,7 @@ class Parser
         $description = optional($document->first('meta[name=description]'))->content ?? '';
         return [
             'status_code' => $urlResponse->getStatusCode(),
-            'h1' => strip_tags($h1),
+            'h1' => mb_substr(strip_tags($h1), 0, 255),
             'title' => strip_tags($title),
             'description' => strip_tags($description)
         ];
