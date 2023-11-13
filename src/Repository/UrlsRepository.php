@@ -27,9 +27,9 @@ class UrlsRepository
 
     public function findOneById(int $id): ?Url
     {
-        $sql = "SELECT * FROM urls WHERE id = ?";
+        $sql = "SELECT * FROM urls WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(1, $id);
+        $stmt->bindValue('id', $id);
         $stmt->execute();
         $url = $stmt->fetch(\PDO::FETCH_ASSOC);
         return is_array($url) ? new Url($url) : null;
@@ -37,9 +37,9 @@ class UrlsRepository
 
     public function findOneByName(string $name): ?Url
     {
-        $sql = "SELECT * FROM urls WHERE name = ?";
+        $sql = "SELECT * FROM urls WHERE name = :name";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(1, $name);
+        $stmt->bindValue('name', $name);
         $stmt->execute();
         $url = $stmt->fetch(\PDO::FETCH_ASSOC);
         return is_array($url) ? new Url($url) : null;
@@ -47,10 +47,10 @@ class UrlsRepository
 
     public function save(Url $url): string
     {
-        $sql = "INSERT INTO urls (name, created_at) VALUES (?, ?) RETURNING id";
+        $sql = "INSERT INTO urls (name, created_at) VALUES (:name, :created_at) RETURNING id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(1, $url->getName());
-        $stmt->bindValue(2, $url->getCreatedAt());
+        $stmt->bindValue('name', $url->getName());
+        $stmt->bindValue('created_at', $url->getCreatedAt());
         $stmt->execute();
         [$id] = $stmt->fetch(\PDO::FETCH_NUM);
         return $id;
