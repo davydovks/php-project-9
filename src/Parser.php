@@ -11,9 +11,9 @@ class Parser
     public static function parseResponse(ResponseInterface $urlResponse): array
     {
         $document = new Document($urlResponse->getBody()->__toString());
-        $h1 = optional($document->first('h1'))->innerHtml() ?? '';
-        $title = optional($document->first('title'))->innerHtml() ?? '';
-        $description = optional($document->first('meta[name=description]'))->content ?? '';
+        $h1 = optional($document->first('h1'))->innerHtml();
+        $title = optional($document->first('title'))->innerHtml();
+        $description = optional($document->first('meta[name=description]'))->content;
         return [
             'status_code' => $urlResponse->getStatusCode(),
             'h1' => mb_substr(strip_tags($h1), 0, 255),
