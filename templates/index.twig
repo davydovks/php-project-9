@@ -11,7 +11,7 @@
             <form action="{{ url_for('urls.store') }}" method="post" class="row mb-3" required="">
                 <div class="col-8 position-relative">
                     <input type="text" name="url[name]" value="{{ url.name }}" class="form-control form-control-lg{{ errors.name is defined ? ' is-invalid' : '' }}" placeholder="https://www.example.com">
-                    <div class="invalid-feedback">{{ errors.name[0] ?? '' }}</div>
+                    <div class="invalid-feedback">{{ errors.name|first }}</div>
                 </div>
                 <div class="col-2">
                     <input type="submit" class="btn btn-primary btn-lg mx-3 px-5 text-uppercase" value="Проверить">
