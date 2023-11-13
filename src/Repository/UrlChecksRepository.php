@@ -51,7 +51,7 @@ class UrlChecksRepository
     {
         $columns = "url_id, status_code, h1, title, description, created_at";
         $values = ":url_id, :status_code, :h1, :title, :description, :created_at";
-        $sql = "INSERT INTO url_checks ({$columns}) VALUES ({$values}) RETURNING id";
+        $sql = "INSERT INTO url_checks ({$columns}) VALUES ({$values})";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue('url_id', $urlCheck->getUrlId());
         $stmt->bindValue('status_code', $urlCheck->getStatusCode());
