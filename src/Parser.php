@@ -11,13 +11,13 @@ class Parser
     public static function parseResponse(ResponseInterface $urlResponse): array
     {
         $document = new Document($urlResponse->getBody()->__toString());
-        $h1 = optional($document->first('h1'))->innerHtml();
-        $title = optional($document->first('title'))->innerHtml();
+        $h1 = optional($document->first('h1'))->text();
+        $title = optional($document->first('title'))->text();
         $description = optional($document->first('meta[name=description]'))->content;
         return [
             'status_code' => $urlResponse->getStatusCode(),
-            'h1' => mb_substr(strip_tags($h1), 0, 255),
-            'title' => strip_tags($title),
+            'h1' => mb_substr($h1, 0, 255),
+            'title' => $title,
             'description' => strip_tags($description)
         ];
     }
